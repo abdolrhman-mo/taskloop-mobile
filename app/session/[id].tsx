@@ -10,7 +10,6 @@ import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSession } from '@/hooks/useSession';
 import { useNavigation } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
 import { Settings, Share2 } from 'lucide-react-native';
 import React, { useLayoutEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -148,7 +147,6 @@ export default function SessionScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background.primary }]}>
-      <StatusBar translucent backgroundColor="rgba(0,0,0,0.3)" style="dark" />
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}

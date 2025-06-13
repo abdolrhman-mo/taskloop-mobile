@@ -1,3 +1,4 @@
+import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { useColorScheme } from 'react-native';
 
@@ -10,8 +11,10 @@ export default function RootLayout() {
 
   return (
       <ThemeProvider>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
         <AuthGuard>
           <ThemedStack />
+          {/* <StatusBar style="dark" /> */}
         </AuthGuard>
       </ThemeProvider>
   );

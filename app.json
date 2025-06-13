@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "taskloopmobile",
+    "name": "Task Loop",
     "slug": "taskloopmobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -29,10 +29,16 @@
       [
         "expo-splash-screen",
         {
+          "backgroundColor": "#ffffff",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
+          "dark": {
+            "image": "./assets/images/splash-icon.png",
+            "backgroundColor": "#1E1E20",
+            "resizeMode": "contain",
+            "imageWidth": 200
+          },
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "imageWidth": 200
         }
       ]
     ],

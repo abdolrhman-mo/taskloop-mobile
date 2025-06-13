@@ -2,7 +2,6 @@ import { ThemedText } from '@/components/ThemedText';
 import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import * as Clipboard from 'expo-clipboard';
-import { StatusBar } from 'expo-status-bar';
 import { Check, Copy } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
@@ -39,7 +38,6 @@ export function ShareSessionMenu({ isOpen, onClose, sessionId }: ShareSessionMen
       transparent
       onRequestClose={onClose}
     >
-      <StatusBar translucent backgroundColor="rgba(0,0,0,0.3)" style="light" />
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.modalOverlay}>
           <TouchableWithoutFeedback>
