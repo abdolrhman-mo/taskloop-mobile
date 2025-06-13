@@ -1,6 +1,7 @@
 'use client';
 
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 import { SettingsMenu } from '@/components/session/SettingsMenu';
 import { ShareRoomCTA } from '@/components/session/ShareRoomCTA';
 import { ShareSessionMenu } from '@/components/session/ShareSessionMenu';
@@ -80,53 +81,53 @@ export default function SessionScreen() {
   // Loading state
   if (loading) {
     return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.background.primary }]}>
+      <ThemedView style={[styles.container, styles.centerContent]}>
         <ActivityIndicator size="large" color={theme.brand.background} />
-        <ThemedText style={[styles.loadingText, { color: theme.typography.primary }]}>
+        <ThemedText style={styles.loadingText}>
           Loading...
         </ThemedText>
-      </View>
+      </ThemedView>
     );
   }
 
   // Error states
   if (error) {
     return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.background.primary }]}>
+      <ThemedView style={[styles.container, styles.centerContent]}>
         <ThemedText style={[styles.errorText, { color: theme.error.DEFAULT }]}>
           {error}
         </ThemedText>
-      </View>
+      </ThemedView>
     );
   }
 
   if (!session) {
     return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.background.primary }]}>
-        <ThemedText style={[styles.errorText, { color: theme.typography.primary }]}>
+      <ThemedView style={[styles.container, styles.centerContent]}>
+        <ThemedText style={styles.errorText}>
           No study room found.
         </ThemedText>
-      </View>
+      </ThemedView>
     );
   }
 
   if (!user) {
     return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.background.primary }]}>
-        <ThemedText style={[styles.errorText, { color: theme.typography.primary }]}>
+      <ThemedView style={[styles.container, styles.centerContent]}>
+        <ThemedText style={styles.errorText}>
           Please log in to view this study room.
         </ThemedText>
-      </View>
+      </ThemedView>
     );
   }
 
   if (!isParticipant) {
     return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.background.primary }]}>
-        <ThemedText style={[styles.errorText, { color: theme.typography.primary }]}>
+      <ThemedView style={[styles.container, styles.centerContent]}>
+        <ThemedText style={styles.errorText}>
           You are not a participant in this study room.
         </ThemedText>
-      </View>
+      </ThemedView>
     );
   }
 
@@ -146,11 +147,10 @@ export default function SessionScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background.primary }]}>
+    <ThemedView style={styles.container}>
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        // showsVerticalScrollIndicator={false}
       >
         <View style={styles.content}>
           <View style={styles.mainContent}>
@@ -230,7 +230,7 @@ export default function SessionScreen() {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </ThemedView>
   );
 }
 

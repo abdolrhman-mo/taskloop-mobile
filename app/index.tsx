@@ -150,58 +150,58 @@ export default function HomeScreen() {
       <SafeAreaView style={{ flex: 1 }}>
         <Nav isDropdownOpen={isDropdownOpen} setIsDropdownOpen={setIsDropdownOpen} />
         <ThemedView style={styles.container}>
-        <ScrollView style={styles.scrollView}>
-          <ThemedView style={styles.content}>
-            <ThemedView style={styles.header}>
-              <ThemedView style={styles.headerContent}>
-                <ThemedText style={styles.title}>
-                  Study Rooms
-                </ThemedText>
-                <TouchableOpacity
-                  onPress={() => router.push('/session/create')}
-                  style={[
-                    styles.createButton,
-                    { backgroundColor: theme.brand.background }
-                  ]}>
-                  <ThemedText style={[styles.createButtonText, { color: theme.brand.text }]}>
-                    Start Study Room
+          <ScrollView style={styles.scrollView}>
+            <ThemedView style={styles.content}>
+              <ThemedView style={styles.header}>
+                <ThemedView style={styles.headerContent}>
+                  <ThemedText style={styles.title}>
+                    Study Rooms
                   </ThemedText>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => router.push('/session/create')}
+                    style={[
+                      styles.createButton,
+                      { backgroundColor: theme.brand.background }
+                    ]}>
+                    <ThemedText style={[styles.createButtonText, { color: theme.brand.text }]}>
+                      Start Study Room
+                    </ThemedText>
+                  </TouchableOpacity>
+                </ThemedView>
               </ThemedView>
+
+              {loading && <LoadingState />}
+              
+              {!loading && error && (
+                <ErrorState 
+                  message={error} 
+                  onRetry={() => {
+                    setError(null);
+                    setLoading(true);
+                  }} 
+                />
+              )}
+
+              {!loading && !error && sessions.length === 0 && (
+                <ThemedView style={styles.emptyState}>
+                  <CreateRoomCTA />
+                </ThemedView>
+              )}
+
+              {!loading && !error && sessions.length > 0 && (
+                <SessionList 
+                  sessions={sessions}
+                  user={user}
+                  onLeave={handleLeaveSession}
+                  onDelete={handleDeleteSession}
+                  leaveState={leaveState}
+                  deleteState={deleteState}
+                />
+              )}
             </ThemedView>
-
-            {loading && <LoadingState />}
-            
-            {!loading && error && (
-              <ErrorState 
-                message={error} 
-                onRetry={() => {
-                  setError(null);
-                  setLoading(true);
-                }} 
-              />
-            )}
-
-            {!loading && !error && sessions.length === 0 && (
-              <ThemedView style={styles.emptyState}>
-                <CreateRoomCTA />
-              </ThemedView>
-            )}
-
-            {!loading && !error && sessions.length > 0 && (
-              <SessionList 
-                sessions={sessions}
-                user={user}
-                onLeave={handleLeaveSession}
-                onDelete={handleDeleteSession}
-                leaveState={leaveState}
-                deleteState={deleteState}
-              />
-            )}
-          </ThemedView>
-        </ScrollView>
-      </ThemedView>
-    </SafeAreaView>
+          </ScrollView>
+        </ThemedView>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 } 
