@@ -1,21 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import ThemedStack from '@/components/navigation/ThemedStack';
-import { ThemeProvider } from '@/contexts/ThemeContext';
+import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
+
+// Separate component to use theme context
+function ThemedStatusBar() {
+  const { resolvedTheme } = useTheme();
+  return <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} />;
+}
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   return (
+    <SafeAreaProvider>
       <ThemeProvider>
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <ThemedStatusBar />
         <AuthGuard>
           <ThemedStack />
-          {/* <StatusBar style="dark" /> */}
         </AuthGuard>
       </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
