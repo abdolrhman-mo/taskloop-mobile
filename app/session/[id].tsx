@@ -3,9 +3,9 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
-import { SettingsMenu } from '@/components/session/SettingsModal';
+import { SettingsMenu } from '@/components/session/SettingsMenu';
 import { ShareRoomCTA } from '@/components/session/ShareRoomCTA';
-import { ShareSessionMenu } from '@/components/session/ShareSessionModal';
+import { ShareSessionMenu } from '@/components/session/ShareSessionMenu';
 import { TaskColumn } from '@/components/session/TaskColumn';
 import { TaskInput } from '@/components/session/TaskInput';
 import { darkTheme, lightTheme } from '@/constants/Colors';

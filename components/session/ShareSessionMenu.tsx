@@ -1,11 +1,11 @@
 import { ThemedText } from '@/components/ThemedText';
-import { CustomModal } from '@/components/common/CustomModal';
 import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import * as Clipboard from 'expo-clipboard';
 import { Check, Copy } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { BottomSheet } from '../common/BottomSheet';
 
 interface ShareSessionMenuProps {
   isOpen: boolean;
@@ -33,7 +33,7 @@ export function ShareSessionMenu({ isOpen, onClose, sessionId }: ShareSessionMen
   };
 
   return (
-    <CustomModal isVisible={isOpen} onClose={onClose}>
+    <BottomSheet isVisible={isOpen} onClose={onClose}>
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
         <Text style={[styles.title, { color: theme.typography.primary }]}>Share Study Room</Text>
       </View>
@@ -72,7 +72,7 @@ export function ShareSessionMenu({ isOpen, onClose, sessionId }: ShareSessionMen
           </ThemedText>
         )}
       </View>
-    </CustomModal>
+    </BottomSheet>
   );
 }
 

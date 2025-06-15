@@ -1,5 +1,5 @@
+import { BottomSheet } from '@/components/common/BottomSheet';
 import { ConfirmationModal } from '@/components/common/ConfirmationModal';
-import { CustomModal } from '@/components/common/CustomModal';
 import { ThemedText } from '@/components/ThemedText';
 import { ENDPOINTS } from '@/config/endpoints';
 import { darkTheme, lightTheme } from '@/constants/Colors';
@@ -113,7 +113,7 @@ export function SettingsMenu({
   return (
     <>
       {isOpen && (
-        <CustomModal isVisible={isOpen} onClose={onClose}>
+        <BottomSheet isVisible={isOpen} onClose={onClose}>
           {/* Study Room Name */}
           <View style={styles.section}>
             <View style={{ 
@@ -247,7 +247,7 @@ export function SettingsMenu({
               <ThemedText style={[styles.error, { color: theme.error.DEFAULT }]}> {actionState.error} </ThemedText>
             )}
           </View>
-        </CustomModal>
+        </BottomSheet>
       )}
 
       <ConfirmationModal

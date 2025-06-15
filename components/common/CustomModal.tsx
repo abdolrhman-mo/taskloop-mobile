@@ -17,7 +17,7 @@ export function CustomModal({ isVisible, onClose, children }: CustomModalProps) 
   const animRef = useRef<Animatable.View & { fadeOut: (duration: number) => Promise<void> }>(null);
 
   const handleClose = () => {
-    animRef.current?.fadeOut(300).then(() => {
+    animRef.current?.fadeOut(200).then(() => {
       onClose();
     });
   };
