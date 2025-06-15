@@ -7,7 +7,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useApi } from '@/hooks/useApi';
 import { Session } from '@/types/session';
 import { useRouter } from 'expo-router';
-import { Edit2, LogOut, Trash2, X } from 'lucide-react-native';
+import { Edit2, LogOut, Trash2 } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SessionNameEditForm } from './SessionNameEditForm';
@@ -124,19 +124,6 @@ export function SettingsMenu({
               <ThemedText style={[styles.sectionTitle, { color: theme.typography.secondary }]}>
                 Study Room Name
               </ThemedText>
-
-              <TouchableOpacity
-                onPress={onClose}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                style={{
-                  padding: 8,
-                  borderRadius: 20,
-                  backgroundColor: theme.background.primary + 'cc',
-                }}
-                activeOpacity={0.7}
-              >
-                <X size={24} color={theme.typography.primary} />
-              </TouchableOpacity>
             </View>
             {isEditingName ? (
               <SessionNameEditForm

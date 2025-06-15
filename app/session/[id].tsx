@@ -16,16 +16,6 @@ import { Settings, Share2 } from 'lucide-react-native';
 import React, { useLayoutEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-
-interface ParticipantWithStats {
-  id: number;
-  username: string;
-  totalTasks: number;
-  completedTasks: number;
-  completionPercentage: number;
-  position: number;
-}
-
 export default function SessionScreen() {
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
