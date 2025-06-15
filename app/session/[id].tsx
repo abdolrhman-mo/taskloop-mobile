@@ -2,9 +2,10 @@
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { SettingsMenu } from '@/components/session/SettingsMenu';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
+import { SettingsMenu } from '@/components/session/SettingsModal';
 import { ShareRoomCTA } from '@/components/session/ShareRoomCTA';
-import { ShareSessionMenu } from '@/components/session/ShareSessionMenu';
+import { ShareSessionMenu } from '@/components/session/ShareSessionModal';
 import { TaskColumn } from '@/components/session/TaskColumn';
 import { TaskInput } from '@/components/session/TaskInput';
 import { darkTheme, lightTheme } from '@/constants/Colors';
@@ -13,7 +14,7 @@ import { useSession } from '@/hooks/useSession';
 import { useNavigation } from '@react-navigation/native';
 import { Settings, Share2 } from 'lucide-react-native';
 import React, { useLayoutEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 
 interface ParticipantWithStats {
@@ -81,12 +82,7 @@ export default function SessionScreen() {
   // Loading state
   if (loading) {
     return (
-      <ThemedView style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={theme.brand.background} />
-        <ThemedText style={styles.loadingText}>
-          Loading...
-        </ThemedText>
-      </ThemedView>
+      <LoadingSpinner fullScreen />
     );
   }
 
@@ -181,50 +177,50 @@ export default function SessionScreen() {
                   error={taskState.error}
                 />
               </View>
-            )}
+                )}
 
             {/* Task columns */}
             <View style={styles.taskColumnsContainer}>
-              <View style={styles.taskColumns}>
-                {/* Current user's task column */}
-                {currentParticipant && currentParticipantStats && (
-                  <View style={styles.taskColumn}>
-                    <TaskColumn
-                      title={`${currentParticipant.username} (you)`}
-                      tasks={participantTasks(currentParticipant.id)}
-                      isColumnOwner={true}
-                      onToggleTask={handleToggleTask}
-                      onDeleteTask={handleDeleteTask}
-                      onEditTask={handleEditTask}
-                      togglingTaskId={taskState.togglingTaskId}
-                      position={showRankings ? currentParticipantStats.position : undefined}
-                      completionPercentage={showRankings ? currentParticipantStats.completionPercentage : undefined}
-                    />
-                  </View>
-                )}
-
-                {/* Other participants' task columns or Share CTA */}
-                {otherParticipantStats.length > 0 ? (
-                  otherParticipantStats.map(stats => (
-                    <View key={stats.id} style={styles.taskColumn}>
+            <View style={styles.taskColumns}>
+                  {/* Current user's task column */}
+                  {currentParticipant && currentParticipantStats && (
+                <View style={styles.taskColumn}>
                       <TaskColumn
-                        title={stats.username}
-                        tasks={participantTasks(stats.id)}
-                        isColumnOwner={false}
+                        title={`${currentParticipant.username} (you)`}
+                        tasks={participantTasks(currentParticipant.id)}
+                        isColumnOwner={true}
                         onToggleTask={handleToggleTask}
                         onDeleteTask={handleDeleteTask}
                         onEditTask={handleEditTask}
                         togglingTaskId={taskState.togglingTaskId}
-                        position={showRankings ? stats.position : undefined}
-                        completionPercentage={showRankings ? stats.completionPercentage : undefined}
+                        position={showRankings ? currentParticipantStats.position : undefined}
+                        completionPercentage={showRankings ? currentParticipantStats.completionPercentage : undefined}
                       />
-                    </View>
-                  ))
-                ) : (
-                  <View style={styles.taskColumn}>
-                    <ShareRoomCTA sessionId={session.uuid} />
+                </View>
+                  )}
+
+                  {/* Other participants' task columns or Share CTA */}
+                  {otherParticipantStats.length > 0 ? (
+                    otherParticipantStats.map(stats => (
+                  <View key={stats.id} style={styles.taskColumn}>
+                        <TaskColumn
+                          title={stats.username}
+                          tasks={participantTasks(stats.id)}
+                          isColumnOwner={false}
+                          onToggleTask={handleToggleTask}
+                          onDeleteTask={handleDeleteTask}
+                          onEditTask={handleEditTask}
+                          togglingTaskId={taskState.togglingTaskId}
+                          position={showRankings ? stats.position : undefined}
+                          completionPercentage={showRankings ? stats.completionPercentage : undefined}
+                        />
                   </View>
-                )}
+                    ))
+                  ) : (
+                <View style={styles.taskColumn}>
+                      <ShareRoomCTA sessionId={session.uuid} />
+                </View>
+                  )}
               </View>
             </View>
           </View>

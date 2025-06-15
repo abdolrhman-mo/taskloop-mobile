@@ -1,155 +1,102 @@
 import { ThemedText } from '@/components/ThemedText';
+import { CustomModal } from '@/components/common/CustomModal';
 import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
+import * as Clipboard from 'expo-clipboard';
 import { Check, Copy } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
-import { BackHandler, Clipboard, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-
-interface ShareSessionModalProps {
+interface ShareSessionMenuProps {
   isOpen: boolean;
   onClose: () => void;
   sessionId: string;
 }
 
-export function ShareSessionModal({ isOpen, onClose, sessionId }: ShareSessionModalProps) {
+export function ShareSessionMenu({ isOpen, onClose, sessionId }: ShareSessionMenuProps) {
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
   const [copyState, setCopyState] = useState({
     isCopied: false,
-    error: null as string | null
+    error: null as string | null,
   });
-
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (isOpen) {
-        onClose();
-        return true;
-      }
-      return false;
-    });
-
-    return () => backHandler.remove();
-  }, [isOpen, onClose]);
 
   const handleCopyLink = async () => {
     try {
-      const sessionUrl = `https://taskloop.app/session/${sessionId}`;
-      await Clipboard.setString(sessionUrl);
+      const sessionUrl = `https://tasklooop.vercel.app/session/${sessionId}`;
+      await Clipboard.setStringAsync(sessionUrl);
       setCopyState({ isCopied: true, error: null });
       setTimeout(() => setCopyState(prev => ({ ...prev, isCopied: false })), 2000);
-    } catch (err) {
-      console.error('Failed to copy link:', err);
+    } catch {
       setCopyState({ isCopied: false, error: 'Failed to copy link' });
     }
   };
 
   return (
-    <Modal
-      visible={isOpen}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <TouchableOpacity
-        style={styles.backdrop}
-        activeOpacity={1}
-        onPress={onClose}
-      >
-        <View 
-          style={[
-            styles.modal,
-            { 
-              backgroundColor: theme.background.primary,
-              borderColor: theme.border,
-            }
-          ]}
+    <CustomModal isVisible={isOpen} onClose={onClose}>
+      <View style={[styles.header, { borderBottomColor: theme.border }]}>
+        <Text style={[styles.title, { color: theme.typography.primary }]}>Share Study Room</Text>
+      </View>
+      <View style={styles.descriptionContainer}>
+        <Text style={[styles.description, { color: theme.typography.secondary }]}>
+          Share this link with your friends to let them join.
+        </Text>
+      </View>
+      <View style={[styles.container, { borderTopColor: theme.border }]}> 
+        <TouchableOpacity
+          onPress={handleCopyLink}
+          style={[styles.button, { backgroundColor: `${theme.brand.background}20` }]}
+          activeOpacity={0.7}
         >
-          {/* Header */}
-          <View style={[styles.header, { borderBottomColor: theme.border }]}>
-            <ThemedText style={styles.headerText}>
-              Share Session
-            </ThemedText>
-          </View>
-
-          {/* Instructions */}
-          <View style={styles.instructions}>
-            <ThemedText style={[styles.instructionsText, { color: theme.typography.secondary }]}>
-              Copy and share this link with your friends to let them join your session
-            </ThemedText>
-          </View>
-
-          {/* Copy Link Section */}
-          <View style={[styles.copySection, { borderTopColor: theme.border }]}>
-            <TouchableOpacity
-              onPress={handleCopyLink}
-              style={[styles.copyButton, { backgroundColor: `${theme.brand.background}20` }]}
-              activeOpacity={0.7}
-            >
-              <View style={styles.buttonContent}>
-                {copyState.isCopied ? (
-                  <>
-                    <Check size={20} color={theme.brand.background} />
-                    <ThemedText style={[styles.buttonText, { color: theme.brand.background }]}>
-                      Link Copied!
-                    </ThemedText>
-                  </>
-                ) : (
-                  <>
-                    <Copy size={20} color={theme.brand.background} />
-                    <ThemedText style={[styles.buttonText, { color: theme.brand.background }]}>
-                      Copy Session Link
-                    </ThemedText>
-                  </>
-                )}
-              </View>
-            </TouchableOpacity>
-            {copyState.error && (
-              <ThemedText style={[styles.error, { color: theme.error.DEFAULT }]}>
-                {copyState.error}
-              </ThemedText>
+          <View style={styles.buttonContent}>
+            {copyState.isCopied ? (
+              <>
+                <Check size={20} color={theme.brand.background} />
+                <ThemedText style={[styles.buttonText, { color: theme.brand.background }]}>
+                  Link Copied!
+                </ThemedText>
+              </>
+            ) : (
+              <>
+                <Copy size={20} color={theme.brand.background} />
+                <ThemedText style={[styles.buttonText, { color: theme.brand.background }]}>
+                  Copy Room Link
+                </ThemedText>
+              </>
             )}
           </View>
-        </View>
-      </TouchableOpacity>
-    </Modal>
+        </TouchableOpacity>
+        {copyState.error && (
+          <ThemedText style={[styles.error, { color: theme.error.DEFAULT }]}>
+            {copyState.error}
+          </ThemedText>
+        )}
+      </View>
+    </CustomModal>
   );
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modal: {
-    width: '90%',
-    maxWidth: 400,
-    borderRadius: 12,
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
   header: {
     padding: 16,
     borderBottomWidth: 1,
   },
-  headerText: {
+  title: {
     fontSize: 18,
     fontWeight: '600',
   },
-  instructions: {
+  descriptionContainer: {
     padding: 24,
   },
-  instructionsText: {
+  description: {
     fontSize: 14,
     textAlign: 'center',
   },
-  copySection: {
+  container: {
     padding: 16,
     borderTopWidth: 1,
   },
-  copyButton: {
+  button: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',

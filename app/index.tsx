@@ -3,10 +3,10 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { Nav } from '@/components/Nav';
 import { CreateRoomCTA } from '@/components/sessions/CreateRoomCTA';
 import { ErrorState } from '@/components/sessions/ErrorState';
-import { LoadingState } from '@/components/sessions/LoadingState';
 import { SessionList } from '@/components/sessions/SessionList';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -170,7 +170,7 @@ export default function HomeScreen() {
                 </ThemedView>
               </ThemedView>
 
-              {loading && <LoadingState />}
+              {loading && <LoadingSpinner containerStyle={styles.loadingContainer} />}
               
               {!loading && error && (
                 <ErrorState 
@@ -260,5 +260,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: theme.background.secondary,
     gap: 8,
+  },
+  loadingContainer: {
+    marginTop: 32,
+    backgroundColor: theme.background.secondary,
+    borderRadius: 8,
   },
 });

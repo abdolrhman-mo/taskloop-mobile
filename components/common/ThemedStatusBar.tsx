@@ -1,21 +1,27 @@
 import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
+import { RootState } from '@/store';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { Platform, StatusBar as RNStatusBar, View } from 'react-native';
+import { useSelector } from 'react-redux';
 
-interface ThemedStatusBarProps {
-  backgroundColor?: string;
-}
-
-export function ThemedStatusBar({ backgroundColor }: ThemedStatusBarProps) {
+export function ThemedStatusBar() {
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
   
-  // Use provided background color or fallback to theme
+  // Get status bar state from Redux
+  const { backgroundColor, style } = useSelector((state: RootState) => state.statusBar);
+  
+  // Determine background color
   const bgColor = backgroundColor || theme.background.primary;
   
+  // Determine status bar style
+  const statusBarStyle = style === 'auto' 
+    ? (resolvedTheme === 'dark' ? 'light' : 'dark')
+    : style;
+  
   return (
-    <View style={{ 
+    <View style={{
       height: Platform.OS === 'ios' ? 0 : RNStatusBar.currentHeight,
       backgroundColor: bgColor,
       position: 'absolute',
@@ -25,10 +31,8 @@ export function ThemedStatusBar({ backgroundColor }: ThemedStatusBarProps) {
       zIndex: 9999,
     }}>
       <ExpoStatusBar 
-        style={resolvedTheme === 'dark' ? 'light' : 'dark'} 
-        // Android-only prop
+        style={statusBarStyle}
         backgroundColor={Platform.OS === 'android' ? bgColor : undefined}
-        // Make status bar translucent on Android
         translucent={Platform.OS === 'android'}
       />
     </View>
