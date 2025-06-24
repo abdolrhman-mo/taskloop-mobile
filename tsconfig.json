@@ -7,7 +7,7 @@
       "esnext"
     ],
     "jsx": "react-native",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "esModuleInterop": true,
     "allowJs": true,
