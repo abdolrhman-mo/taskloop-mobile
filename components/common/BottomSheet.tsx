@@ -1,15 +1,16 @@
 import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useSafeScrollView } from '@/hooks/useSafeScrollView';
 import { Portal } from '@gorhom/portal';
 import React, { useEffect, useRef } from 'react';
 import {
-  Animated,
-  Dimensions,
-  PanResponder,
-  ScrollView,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View
+    Animated,
+    Dimensions,
+    PanResponder,
+    ScrollView,
+    StyleSheet,
+    TouchableWithoutFeedback,
+    View
 } from 'react-native';
 
 interface BottomSheetProps {
@@ -22,6 +23,7 @@ export function BottomSheet({ isVisible, onClose, children }: BottomSheetProps) 
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
   const { height } = Dimensions.get('window');
+  const { insets } = useSafeScrollView();
   const translateY = useRef(new Animated.Value(height)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const lastGestureDy = useRef(0);
@@ -150,7 +152,8 @@ export function BottomSheet({ isVisible, onClose, children }: BottomSheetProps) 
                 { 
                   backgroundColor: theme.background.primary,
                   height: height * 0.4,
-                  transform: [{ translateY }]
+                  transform: [{ translateY }],
+                  paddingBottom: insets.bottom
                 }
               ]}
             >

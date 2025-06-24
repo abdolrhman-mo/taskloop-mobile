@@ -1,3 +1,4 @@
+import { SafeScrollView } from '@/components/common/SafeScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ENDPOINTS } from '@/config/endpoints';
 import { darkTheme, lightTheme } from '@/constants/Colors';
@@ -6,7 +7,7 @@ import { useApi } from '@/hooks/useApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface RegisterResponse {
   message: string;
@@ -14,35 +15,37 @@ interface RegisterResponse {
 }
 
 export default function RegisterScreen() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const { post } = useApi();
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
+  const router = useRouter();
+  const { post } = useApi();
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!username || !email || !password || !confirmPassword) return;
+    if (!formData.username || !formData.email || !formData.password || !formData.confirmPassword) return;
     
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
     
     // Basic validation
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
-      setLoading(false);
+      setIsLoading(false);
       return;
     }
 
     try {
       const response = await post<RegisterResponse>(ENDPOINTS.AUTH.REGISTER.path, {
-        username,
-        email,
-        password
+        username: formData.username,
+        email: formData.email,
+        password: formData.password
       });
 
       // Store token in AsyncStorage
@@ -52,7 +55,7 @@ export default function RegisterScreen() {
       console.error(err);
       setError('Registration failed. Please try again.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -61,10 +64,7 @@ export default function RegisterScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
+      <SafeScrollView>
         <View style={styles.content}>
           <View style={styles.header}>
             <ThemedText style={styles.title}>
@@ -89,8 +89,8 @@ export default function RegisterScreen() {
           ]}>
             <View style={styles.inputGroup}>
               <TextInput
-                value={username}
-                onChangeText={setUsername}
+                value={formData.username}
+                onChangeText={(text) => setFormData({ ...formData, username: text })}
                 placeholder="Username"
                 placeholderTextColor={theme.typography.secondary}
                 style={[
@@ -105,8 +105,8 @@ export default function RegisterScreen() {
                 autoComplete="username"
               />
               <TextInput
-                value={email}
-                onChangeText={setEmail}
+                value={formData.email}
+                onChangeText={(text) => setFormData({ ...formData, email: text })}
                 placeholder="Email address"
                 placeholderTextColor={theme.typography.secondary}
                 style={[
@@ -121,8 +121,8 @@ export default function RegisterScreen() {
                 autoComplete="email"
               />
               <TextInput
-                value={password}
-                onChangeText={setPassword}
+                value={formData.password}
+                onChangeText={(text) => setFormData({ ...formData, password: text })}
                 placeholder="Password"
                 placeholderTextColor={theme.typography.secondary}
                 style={[
@@ -136,8 +136,8 @@ export default function RegisterScreen() {
                 autoComplete="password-new"
               />
               <TextInput
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
+                value={formData.confirmPassword}
+                onChangeText={(text) => setFormData({ ...formData, confirmPassword: text })}
                 placeholder="Confirm Password"
                 placeholderTextColor={theme.typography.secondary}
                 style={[
@@ -161,17 +161,17 @@ export default function RegisterScreen() {
 
             <TouchableOpacity
               onPress={handleSubmit}
-              disabled={loading}
+              disabled={isLoading}
               style={[
                 styles.button,
                 { 
                   backgroundColor: theme.brand.background,
-                  opacity: loading ? 0.5 : 1
+                  opacity: isLoading ? 0.5 : 1
                 }
               ]}
               activeOpacity={0.8}
             >
-              {loading ? (
+              {isLoading ? (
                 <View style={styles.buttonContent}>
                   <ActivityIndicator size="small" color={theme.brand.text} />
                   <ThemedText style={[styles.buttonText, { color: theme.brand.text }]}>
@@ -186,7 +186,7 @@ export default function RegisterScreen() {
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
+      </SafeScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -194,9 +194,6 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
   },
   content: {
     flex: 1,

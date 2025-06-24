@@ -1,3 +1,4 @@
+import { SafeScrollView } from '@/components/common/SafeScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ENDPOINTS } from '@/config/endpoints';
 import { darkTheme, lightTheme } from '@/constants/Colors';
@@ -7,7 +8,8 @@ import { auth } from '@/utils/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface LoginResponse {
   message: string;
@@ -23,6 +25,7 @@ export default function LoginScreen() {
   const { post } = useApi();
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
+  const insets = useSafeAreaInsets();
 
   const handleSubmit = async () => {
     if (!username || !password) return;
@@ -60,10 +63,7 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
+      <SafeScrollView>
         <View style={styles.content}>
           <View style={styles.header}>
             <ThemedText style={styles.title}>
@@ -155,7 +155,7 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
+      </SafeScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -163,9 +163,6 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
   },
   content: {
     flex: 1,

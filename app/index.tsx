@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { Nav } from '@/components/Nav';
@@ -34,6 +35,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { get, post, delete: deleteRequest } = useApi();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const insets = useSafeAreaInsets();
   
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
@@ -146,11 +148,19 @@ export default function HomeScreen() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => setIsDropdownOpen(false)}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <Nav isDropdownOpen={isDropdownOpen} setIsDropdownOpen={setIsDropdownOpen} />
-        <ThemedView style={styles.container}>
-          <ScrollView style={styles.scrollView}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Nav isDropdownOpen={isDropdownOpen} setIsDropdownOpen={setIsDropdownOpen} />
+      <ThemedView style={[styles.container, { paddingTop: insets.top + 60 }]}>
+        <ScrollView 
+          style={styles.scrollView}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingBottom: insets.bottom + 20 }
+          ]}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <TouchableWithoutFeedback onPress={() => setIsDropdownOpen(false)}>
             <ThemedView style={styles.content}>
               <ThemedView style={styles.header}>
                 <ThemedView style={styles.headerContent}>
@@ -199,23 +209,24 @@ export default function HomeScreen() {
                 />
               )}
             </ThemedView>
-          </ScrollView>
-        </ThemedView>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback>
+        </ScrollView>
+      </ThemedView>
+    </SafeAreaView>
   );
 } 
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 90, // Add margin to account for the Nav height
   },
   scrollView: {
     flex: 1,
   },
+  scrollContent: {
+    // Remove flexGrow to prevent gray area
+  },
   content: {
-    flex: 1,
     padding: 24,
     maxWidth: 1200,
     alignSelf: 'center',

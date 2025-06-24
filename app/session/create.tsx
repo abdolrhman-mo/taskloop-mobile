@@ -1,5 +1,6 @@
 'use client';
 
+import { SafeScrollView } from '@/components/common/SafeScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ENDPOINTS } from '@/config/endpoints';
 import { darkTheme, lightTheme } from '@/constants/Colors';
@@ -7,7 +8,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useApi } from '@/hooks/useApi';
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface CreateSessionResponse {
   uuid: string;
@@ -78,10 +79,7 @@ export default function CreateSessionScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={[styles.container, { backgroundColor: theme.background.primary }]}
     >
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
+      <SafeScrollView>
         <View style={styles.content}>
           {/* <View style={styles.header}>
             <ThemedText style={styles.title}>Create New Session</ThemedText>
@@ -181,7 +179,7 @@ export default function CreateSessionScreen() {
             </View>
           </View>
         </View>
-      </ScrollView>
+      </SafeScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -189,9 +187,6 @@ export default function CreateSessionScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
   },
   content: {
     flex: 1,

@@ -3,16 +3,16 @@ import { ThemedView } from '@/components/ThemedView';
 import { Logo } from '@/components/common/Logo';
 import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useSafeScrollView } from '@/hooks/useSafeScrollView';
 import { Slot, useRouter } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AuthLayout() {
   const router = useRouter();
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
-  const insets = useSafeAreaInsets();
+  const { insets } = useSafeScrollView();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -58,7 +58,7 @@ export default function AuthLayout() {
         </View>
 
         {/* Main Content */}
-        <View style={styles.main}>
+        <View style={[styles.main, { paddingBottom: insets.bottom + 16 }]}>
           <Slot />
         </View>
       </ThemedView>

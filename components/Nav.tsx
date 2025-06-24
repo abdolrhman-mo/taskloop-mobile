@@ -5,12 +5,12 @@ import { ENDPOINTS } from '@/config/endpoints';
 import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useApi } from '@/hooks/useApi';
+import { useSafeScrollView } from '@/hooks/useSafeScrollView';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { ChevronDown, LogOut } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ConfirmationModal } from './common/ConfirmationModal';
 import { DropdownMenu } from './common/DropdownMenu';
 import { Logo } from './common/Logo';
@@ -38,7 +38,7 @@ export function Nav({ isDropdownOpen, setIsDropdownOpen, children }: NavProps) {
   const dropdownRef = useRef<View>(null);
   const router = useRouter();
   const { get } = useApi();
-  const insets = useSafeAreaInsets();
+  const { insets } = useSafeScrollView();
 
   // Get username from /auth/me endpoint
   useEffect(() => {
@@ -106,7 +106,14 @@ export function Nav({ isDropdownOpen, setIsDropdownOpen, children }: NavProps) {
 
   return (
     <>
-      <View style={[styles.container, { backgroundColor: theme.background.primary, paddingTop: insets.top }]}>
+      <View style={[
+        styles.container, 
+        { 
+          backgroundColor: theme.background.primary, 
+          paddingTop: insets.top,
+          height: insets.top + 60, // 60px for nav content
+        }
+      ]}>
         <View style={styles.content}>
           {/* Left section - Logo */}
           <View style={styles.logoContainer}>
@@ -193,7 +200,9 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
       },
       android: {
-        elevation: 2,
+        elevation: 4, // Increase elevation for better visibility
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(0,0,0,0.1)', // Add subtle border
       },
     }),
   },

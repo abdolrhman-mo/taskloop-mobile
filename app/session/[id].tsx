@@ -3,6 +3,7 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
+import { SafeScrollView } from '@/components/common/SafeScrollView';
 import { SettingsMenu } from '@/components/session/SettingsMenu';
 import { ShareRoomCTA } from '@/components/session/ShareRoomCTA';
 import { ShareSessionMenu } from '@/components/session/ShareSessionMenu';
@@ -14,12 +15,14 @@ import { useSession } from '@/hooks/useSession';
 import { useNavigation } from '@react-navigation/native';
 import { Settings, Share2 } from 'lucide-react-native';
 import React, { useLayoutEffect, useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function SessionScreen() {
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const [taskSortOrder, setTaskSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [showRankings, setShowRankings] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -134,10 +137,7 @@ export default function SessionScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <SafeScrollView style={styles.scrollView}>
         <View style={styles.content}>
           <View style={styles.mainContent}>
             <SettingsMenu
@@ -215,7 +215,7 @@ export default function SessionScreen() {
             </View>
           </View>
         </View>
-      </ScrollView>
+      </SafeScrollView>
     </ThemedView>
   );
 }
