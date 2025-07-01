@@ -169,7 +169,7 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     paddingVertical: 12,
     borderRadius: 8,
   },

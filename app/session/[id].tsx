@@ -15,14 +15,14 @@ import { useSession } from '@/hooks/useSession';
 import { useNavigation } from '@react-navigation/native';
 import { Settings, Share2 } from 'lucide-react-native';
 import React, { useLayoutEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StyleSheet, TouchableOpacity, View, FlatList, Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
 
 export default function SessionScreen() {
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
   const navigation = useNavigation();
-  const insets = useSafeAreaInsets();
   const [taskSortOrder, setTaskSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [showRankings, setShowRankings] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -135,9 +135,25 @@ export default function SessionScreen() {
     return getSortedTasks(participantTasks);
   };
 
+  // Prepare data for FlatList: current participant first, then others
+  const participantColumnsData = [
+    ...(currentParticipant && currentParticipantStats ? [{
+      id: currentParticipant.id,
+      username: `${currentParticipant.username} (you)`,
+      isCurrentUser: true,
+      stats: currentParticipantStats,
+    }] : []),
+    ...otherParticipantStats.map(stats => ({
+      id: stats.id,
+      username: stats.username,
+      isCurrentUser: false,
+      stats,
+    }))
+  ];
+
   return (
     <ThemedView style={styles.container}>
-      <SafeScrollView style={styles.scrollView}>
+      {/* <SafeScrollView style={styles.scrollView}> */}
         <View style={styles.content}>
           <View style={styles.mainContent}>
             <SettingsMenu
@@ -167,55 +183,52 @@ export default function SessionScreen() {
                   error={taskState.error}
                 />
               </View>
-                )}
+            )}
 
-            {/* Task columns */}
+            {/* Task columns with horizontal scroll */}
             <View style={styles.taskColumnsContainer}>
-              <View style={styles.taskColumns}>
-                {/* Current user's task column */}
-                {currentParticipant && currentParticipantStats && (
-                  <View style={styles.taskColumn}>
-                    <TaskColumn
-                      title={`${currentParticipant.username} (you)`}
-                      tasks={participantTasks(currentParticipant.id)}
-                      isColumnOwner={true}
-                      onToggleTask={handleToggleTask}
-                      onDeleteTask={handleDeleteTask}
-                      onEditTask={handleEditTask}
-                      togglingTaskId={taskState.togglingTaskId}
-                      position={showRankings ? currentParticipantStats.position : undefined}
-                      completionPercentage={showRankings ? currentParticipantStats.completionPercentage : undefined}
-                    />
-                  </View>
-                )}
-
-                {/* Other participants' task columns or Share CTA */}
-                {otherParticipantStats.length > 0 ? (
-                  otherParticipantStats.map(stats => (
-                    <View key={stats.id} style={styles.taskColumn}>
+              {participantColumnsData.length > 0 ? (
+                <FlatList
+                  data={participantColumnsData}
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  keyExtractor={item => item.id.toString()}
+                  contentContainerStyle={styles.taskColumns}
+                  renderItem={({ item }) => (
+                    <View style={styles.taskColumn}>
                       <TaskColumn
-                        title={stats.username}
-                        tasks={participantTasks(stats.id)}
-                        isColumnOwner={false}
+                        title={item.username}
+                        tasks={participantTasks(item.id)}
+                        isColumnOwner={item.isCurrentUser}
                         onToggleTask={handleToggleTask}
                         onDeleteTask={handleDeleteTask}
                         onEditTask={handleEditTask}
                         togglingTaskId={taskState.togglingTaskId}
-                        position={showRankings ? stats.position : undefined}
-                        completionPercentage={showRankings ? stats.completionPercentage : undefined}
+                        position={showRankings ? item.stats.position : undefined}
+                        completionPercentage={showRankings ? item.stats.completionPercentage : undefined}
                       />
-                  </View>
-                  ))
-                ) : (
-                  <View style={styles.taskColumn}>
-                    <ShareRoomCTA sessionId={session.uuid} />
-                  </View>
-                )}
-              </View>
+                    </View>
+                  )}
+                />
+              ) : (
+                <FlatList
+                  data={[{ key: 'share' }]}
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.taskColumns}
+                  renderItem={() => (
+                    <View style={styles.taskColumn}>
+                      <ShareRoomCTA sessionId={session.uuid} />
+                    </View>
+                  )}
+                />
+              )}
             </View>
           </View>
         </View>
-      </SafeScrollView>
+      {/* </SafeScrollView> */}
     </ThemedView>
   );
 }
@@ -260,7 +273,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   taskColumn: {
-    flex: 1,
+    width: width * 0.8,
     minHeight: 200,
   },
   loadingText: {

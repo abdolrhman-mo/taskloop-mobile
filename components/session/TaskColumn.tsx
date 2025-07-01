@@ -57,10 +57,6 @@ export function TaskColumn({
   return (
     <View style={[
       styles.container,
-      { 
-        backgroundColor: theme.background.secondary,
-        borderColor: theme.border,
-      }
     ]}>
       {/* Header section with user name and position */}
       <View style={[styles.header, { backgroundColor: `${theme.brand.background}10` }]}>
@@ -90,7 +86,7 @@ export function TaskColumn({
       </View>
 
       {/* Task lists section */}
-      <View style={[styles.content, styles.contentContainer]}>
+      <View style={[styles.contentContainer]}>
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Circle size={16} color="#EAB308" />
@@ -173,14 +169,10 @@ export function TaskColumn({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 12,
-    borderWidth: 1,
     overflow: 'hidden',
   },
   header: {
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'transparent',
   },
   headerContent: {
     flexDirection: 'row',
@@ -205,10 +197,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-  content: {
-  },
   contentContainer: {
-    padding: 16,
+    paddingVertical: 16,
     gap: 16,
   },
   section: {
@@ -218,7 +208,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 18,

@@ -177,6 +177,17 @@ export default function HomeScreen() {
                       Start Study Room
                     </ThemedText>
                   </TouchableOpacity>
+                  {/* Test button */}
+                  <TouchableOpacity
+                    onPress={() => router.push('/test')}
+                    style={[
+                      styles.createButton,
+                      { backgroundColor: theme.brand.background }
+                    ]}>
+                    <ThemedText style={[styles.createButtonText, { color: theme.brand.text }]}>
+                      Test
+                    </ThemedText>
+                  </TouchableOpacity>
                 </ThemedView>
               </ThemedView>
 

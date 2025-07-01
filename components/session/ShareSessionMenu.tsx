@@ -24,6 +24,7 @@ export function ShareSessionMenu({ isOpen, onClose, sessionId }: ShareSessionMen
   const handleCopyLink = async () => {
     try {
       const sessionUrl = `https://tasklooop.vercel.app/session/${sessionId}`;
+      // const sessionUrl = `taskloopmobile://session/${sessionId}`;
       await Clipboard.setStringAsync(sessionUrl);
       setCopyState({ isCopied: true, error: null });
       setTimeout(() => setCopyState(prev => ({ ...prev, isCopied: false })), 2000);
