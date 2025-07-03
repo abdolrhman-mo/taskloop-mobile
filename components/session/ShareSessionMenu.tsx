@@ -3,10 +3,12 @@ import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import * as Clipboard from 'expo-clipboard';
 import { Check, Copy } from 'lucide-react-native';
+import { MessageCircle } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheet } from '../common/BottomSheet';
-
+import { Linking } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 interface ShareSessionMenuProps {
   isOpen: boolean;
   onClose: () => void;
@@ -33,92 +35,71 @@ export function ShareSessionMenu({ isOpen, onClose, sessionId }: ShareSessionMen
     }
   };
 
+  const handleShareWhatsApp = async () => {
+    const sessionUrl = `https://tasklooop.vercel.app/session/${sessionId}`;
+    const message = encodeURIComponent(`Join my study room: ${sessionUrl}`);
+    const whatsappUrl = `whatsapp://send?text=${message}`;
+    try {
+      await Linking.openURL(whatsappUrl);
+    } catch {
+      // Optionally handle error (e.g., WhatsApp not installed)
+    }
+  };
+
   return (
     <BottomSheet isVisible={isOpen} onClose={onClose}>
-      <View style={[styles.header, { borderBottomColor: theme.border }]}>
-        <Text style={[styles.title, { color: theme.typography.primary }]}>Share Study Room</Text>
+      <View className="p-4 pb-2">
+        <Text style={{ color: theme.typography.primary }} className="text-lg font-semibold">Share Study Room</Text>
       </View>
-      <View style={styles.descriptionContainer}>
-        <Text style={[styles.description, { color: theme.typography.secondary }]}>
+      <View style={{ borderBottomColor: theme.border }} className="pb-6 mb-4 mx-4 border-b">
+        <Text style={{ color: theme.typography.secondary }} className="text-sm">
           Share this link with your friends to let them join.
         </Text>
       </View>
-      <View style={[styles.container, { borderTopColor: theme.border }]}>
+      <View className="p-4 flex-row gap-2">
+        {/* WhatsApp Share Button */}
         <TouchableOpacity
-          onPress={handleCopyLink}
-          style={[styles.button, { backgroundColor: `${theme.brand.background}20` }]}
+          onPress={handleShareWhatsApp}
+          className="flex-1 flex-row items-center justify-center gap-2 py-3 px-4 rounded-lg"
+          style={{ backgroundColor: '#25D36620' }}
           activeOpacity={0.7}
         >
-          <View style={styles.buttonContent}>
+          <FontAwesome name="whatsapp" size={20} color="#25D366" />
+          <ThemedText style={{ color: '#25D366' }} className="text-base font-medium">
+            WhatsApp
+          </ThemedText>
+        </TouchableOpacity>
+        {/* Copy Link Button */}
+        <TouchableOpacity
+          onPress={handleCopyLink}
+          className="flex-1 flex-row items-center justify-center gap-2 py-3 px-4 rounded-lg"
+          style={{ backgroundColor: `${theme.brand.background}20` }}
+          activeOpacity={0.7}
+        >
+          <View className="flex-row items-center gap-2">
             {copyState.isCopied ? (
               <>
                 <Check size={20} color={theme.brand.background} />
-                <ThemedText style={[styles.buttonText, { color: theme.brand.background }]}>
+                <ThemedText style={{ color: theme.brand.background }} className="text-base font-medium">
                   Link Copied!
                 </ThemedText>
               </>
             ) : (
               <>
                 <Copy size={20} color={theme.brand.background} />
-                <ThemedText style={[styles.buttonText, { color: theme.brand.background }]}>
-                  Copy Room Link
+                <ThemedText style={{ color: theme.brand.background }} className="text-base font-medium">
+                  Copy Link
                 </ThemedText>
               </>
             )}
           </View>
         </TouchableOpacity>
         {copyState.error && (
-          <ThemedText style={[styles.error, { color: theme.error.DEFAULT }]}>
+          <ThemedText style={{ color: theme.error.DEFAULT }} className="text-sm mt-2 text-center">
             {copyState.error}
           </ThemedText>
         )}
       </View>
     </BottomSheet>
   );
-}
-
-const styles = StyleSheet.create({
-  header: {
-    padding: 16,
-    borderBottomWidth: 1,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  descriptionContainer: {
-    padding: 24,
-  },
-  description: {
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  container: {
-    padding: 16,
-    borderTopWidth: 1,
-  },
-  button: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  error: {
-    fontSize: 14,
-    marginTop: 8,
-    textAlign: 'center',
-  },
-}); 
+} 
