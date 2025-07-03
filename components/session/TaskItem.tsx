@@ -11,6 +11,7 @@ import {
 import React from 'react';
 import { useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, TextInput, View } from 'react-native';
+import { CustomModal } from '../common/CustomModal';
 
 interface TaskItemProps {
   task: Task;
@@ -62,6 +63,16 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
     }
   };
 
+  const handleOpenEdit = () => {
+    setEditText(task.text);
+    setIsEditing(true);
+  };
+
+  const handleCloseEdit = () => {
+    setIsEditing(false);
+    setEditText(task.text);
+  };
+
   const isChecked = task.is_done;
 
   return (
@@ -82,76 +93,88 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
             <Circle size={16} color="#EAB308" />
           )}
         </Pressable>
-        
-        {/* Edit input or task text */}
-        {isEditing ? (
-          <View className="flex-1 flex-row gap-2 items-center">
-            <TextInput
-              ref={inputRef as React.RefObject<TextInput>}
-              value={editText}
-              onChangeText={setEditText}
-              style={{
-                backgroundColor: theme.background.secondary,
-                color: theme.typography.primary,
-                borderColor: theme.border,
-              }}
-              className="flex-1 px-2 py-1 rounded border text-base"
-              editable={!isSaving}
-              autoFocus
-            />
+        {/* Task text */}
+        <ThemedText 
+          className={`flex-1 ${task.is_done ? 'line-through' : ''} ${(isToggling || isDeleting || isSaving) ? 'opacity-50' : ''}`}
+        >
+          {task.text}
+        </ThemedText>
+        {isColumnOwner && (
+          <View className="flex-row gap-2">
+            <Pressable
+              onPress={handleOpenEdit}
+              disabled={isDeleting || isSaving}
+              className="p-1 rounded"
+              style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+            >
+              <Pencil size={16} color={theme.typography.secondary} />
+            </Pressable>
+            <Pressable
+              onPress={handleDelete}
+              disabled={isDeleting || isSaving}
+              className="p-1 rounded"
+              style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+            >
+              {isDeleting ? (
+                <ActivityIndicator size="small" color={theme.error.DEFAULT} />
+              ) : (
+                <Trash2 size={16} color={theme.error.DEFAULT} />
+              )}
+            </Pressable>
+          </View>
+        )}
+      </View>
+      
+      {/* Edit Modal */}
+      <CustomModal isVisible={isEditing} onClose={handleCloseEdit}>
+        <View className="gap-4">
+          <ThemedText className="text-lg font-semibold text-center">Edit Task</ThemedText>
+          <ThemedText className="text-sm text-gray-500">Update your task below:</ThemedText>
+          <TextInput
+            ref={inputRef as React.RefObject<TextInput>}
+            value={editText}
+            onChangeText={setEditText}
+            style={{
+              backgroundColor: theme.background.secondary,
+              color: theme.typography.primary,
+              borderColor: theme.border,
+              textAlignVertical: 'top',
+            }}
+            className="px-3 py-2 rounded border text-base min-h-[72px] max-h-[144px]"
+            editable={!isSaving}
+            autoFocus
+            multiline
+            numberOfLines={3}
+            maxLength={300}
+            returnKeyType="done"
+            blurOnSubmit={true}
+          />
+          <View className="flex-row gap-2 mt-2">
+            <Pressable
+              onPress={handleCloseEdit}
+              disabled={isSaving}
+              className="flex-1 py-2 rounded bg-gray-200 items-center"
+              style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+            >
+              <ThemedText className="text-base font-medium" style={{ color: theme.typography.primary }}>
+                Cancel
+              </ThemedText>
+            </Pressable>
             <Pressable
               onPress={handleEdit}
-              disabled={isSaving || !editText.trim() || editText === task.text}
-              style={({ pressed }) => [
-                { backgroundColor: theme.brand.background },
-                pressed && { opacity: 0.7 },
-                (isSaving || !editText.trim() || editText === task.text) && { opacity: 0.5 },
-              ]}
-              className="px-3 py-1 rounded justify-center items-center"
+              className="flex-1 py-2 rounded items-center bg-blue-400"
             >
               {isSaving ? (
                 <ActivityIndicator size="small" color={theme.brand.text} />
               ) : (
-                <ThemedText style={{ color: theme.brand.text }} className="text-sm font-medium">
+                <ThemedText style={{ color: theme.brand.text }} className="text-base font-semibold">
                   Save
                 </ThemedText>
               )}
             </Pressable>
           </View>
-        ) : (
-          <>
-            <ThemedText 
-              className={`flex-1 ${task.is_done ? 'line-through' : ''} ${(isToggling || isDeleting || isSaving) ? 'opacity-50' : ''}`}
-            >
-              {task.text}
-            </ThemedText>
-            {isColumnOwner && !isEditing && (
-              <View className="flex-row gap-2">
-                <Pressable
-                  onPress={() => setIsEditing(true)}
-                  disabled={isDeleting || isSaving}
-                  className="p-1 rounded"
-                  style={({ pressed }) => [pressed && { opacity: 0.7 }]}
-                >
-                  <Pencil size={16} color={theme.typography.secondary} />
-                </Pressable>
-                <Pressable
-                  onPress={handleDelete}
-                  disabled={isDeleting || isSaving}
-                  className="p-1 rounded"
-                  style={({ pressed }) => [pressed && { opacity: 0.7 }]}
-                >
-                  {isDeleting ? (
-                    <ActivityIndicator size="small" color={theme.error.DEFAULT} />
-                  ) : (
-                    <Trash2 size={16} color={theme.error.DEFAULT} />
-                  )}
-                </Pressable>
-              </View>
-            )}
-          </>
-        )}
-      </View>
+        </View>
+      </CustomModal>
     </View>
   );
 }

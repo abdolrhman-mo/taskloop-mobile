@@ -2,7 +2,7 @@ import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Portal } from '@gorhom/portal';
 import React, { useRef } from 'react';
-import { ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
 interface CustomModalProps {
@@ -26,25 +26,30 @@ export function CustomModal({ isVisible, onClose, children }: CustomModalProps) 
 
   return (
     <Portal>
-      <View style={[styles.container, { backgroundColor: 'rgba(0,0,0,0.3)' }]}>
-        <TouchableWithoutFeedback onPress={handleClose}>
-          <View style={styles.overlay}>
-            <TouchableWithoutFeedback>
-              <Animatable.View 
-                ref={animRef}
-                animation={isVisible ? "fadeIn" : undefined}
-                duration={300}
-                easing="ease-in-out"
-                style={[styles.content, { backgroundColor: theme.background.primary }]}
-              >
-                <ScrollView>
-                  {children}
-                </ScrollView>
-              </Animatable.View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}
+      >
+        <View style={[styles.container, { backgroundColor: 'rgba(0,0,0,0.3)' }]}>
+          <TouchableWithoutFeedback onPress={handleClose}>
+            <View style={styles.overlay}>
+              <TouchableWithoutFeedback>
+                <Animatable.View 
+                  ref={animRef}
+                  animation={isVisible ? "fadeIn" : undefined}
+                  duration={300}
+                  easing="ease-in-out"
+                  style={[styles.content, { backgroundColor: theme.background.primary }]}
+                >
+                  <ScrollView>
+                    {children}
+                  </ScrollView>
+                </Animatable.View>
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+      </KeyboardAvoidingView>
     </Portal>
   );
 }

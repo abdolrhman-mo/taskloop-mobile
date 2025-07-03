@@ -152,6 +152,9 @@ export default function SessionScreen() {
     }))
   ];
 
+
+  // TODO: Swipe down to reload the whole page
+
   return (
     <ThemedView className="flex-1 py-4">
       <SafeAreaView className="flex-1">
