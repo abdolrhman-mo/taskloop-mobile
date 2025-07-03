@@ -3,6 +3,7 @@ import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import React, { useState } from 'react';
 import { ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Plus } from 'lucide-react-native';
 
 interface TaskInputProps {
   onSubmit: (text: string) => Promise<void>;
@@ -67,9 +68,9 @@ export function TaskInput({ onSubmit, isAdding, error }: TaskInputProps) {
               </ThemedText>
             </View>
           ) : (
-            <ThemedText style={[styles.buttonText, { color: theme.brand.text }]}>
-              Add to your todo
-            </ThemedText>
+            <View style={styles.buttonContent}>
+              <Plus size={20} color="white" />
+            </View>
           )}
         </TouchableOpacity>
       </View>

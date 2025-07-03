@@ -2,6 +2,7 @@
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { CustomSafeAreaView } from '@/components/common/CustomSafeAreaView';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { SafeScrollView } from '@/components/common/SafeScrollView';
 import { SettingsMenu } from '@/components/session/SettingsMenu';
@@ -15,7 +16,7 @@ import { useSession } from '@/hooks/useSession';
 import { useNavigation } from '@react-navigation/native';
 import { Settings, Share2 } from 'lucide-react-native';
 import React, { useLayoutEffect, useState } from 'react';
-import { TouchableOpacity, View, FlatList, Dimensions } from 'react-native';
+import { TouchableOpacity, View, FlatList, Dimensions, SafeAreaView } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -152,85 +153,83 @@ export default function SessionScreen() {
   ];
 
   return (
-    <>
-      <SettingsMenu
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        session={session}
-        isCreator={Boolean(user && session.creator === user.id)}
-        onSessionUpdate={(updatedSession) => session && Object.assign(session, updatedSession)}
-        onSessionLeave={handleLeaveSession}
-        onSessionDelete={handleDeleteSession}
-        taskSortOrder={taskSortOrder}
-        onTaskSortChange={setTaskSortOrder}
-        showRankings={showRankings}
-        onShowRankingsChange={setShowRankings}
-      />
-      <ShareSessionMenu
-        isOpen={isShareOpen}
-        onClose={() => setIsShareOpen(false)}
-        sessionId={session.uuid}
-      />
+    <ThemedView className="flex-1 py-4">
+      <SafeAreaView className="flex-1">
+        <SettingsMenu
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          session={session}
+          isCreator={Boolean(user && session.creator === user.id)}
+          onSessionUpdate={(updatedSession) => session && Object.assign(session, updatedSession)}
+          onSessionLeave={handleLeaveSession}
+          onSessionDelete={handleDeleteSession}
+          taskSortOrder={taskSortOrder}
+          onTaskSortChange={setTaskSortOrder}
+          showRankings={showRankings}
+          onShowRankingsChange={setShowRankings}
+        />
+        <ShareSessionMenu
+          isOpen={isShareOpen}
+          onClose={() => setIsShareOpen(false)}
+          sessionId={session.uuid}
+        />
 
-      <ThemedView className="flex-1 py-4">
-        {/* <SafeScrollView className="flex-1"> */}
-          <View className="flex-1 gap-4">
+        {/* Task input and controls */}
+        {currentParticipant && (
+          <View className="gap-4 px-4 pb-4">
+            <TaskInput
+              onSubmit={handleAddTask}
+              isAdding={taskState.isAddingTask}
+              error={taskState.error}
+            />
+          </View>
+        )}
 
-            {/* Task input and controls */}
-            {currentParticipant && (
-              <View className="gap-4 px-4">
-                <TaskInput
-                  onSubmit={handleAddTask}
-                  isAdding={taskState.isAddingTask}
-                  error={taskState.error}
+        {/* Task columns with horizontal scroll */}
+        {participantColumnsData.length > 0 ? (
+          <FlatList
+            data={participantColumnsData}
+            horizontal
+            snapToInterval={width * 0.8}
+            decelerationRate="fast"
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={item => item.id.toString()}
+            // contentContainerStyle={{ paddingHorizontal: width * 0.15 }}
+            className='px-2'
+            renderItem={({ item }) => (
+              <View 
+                style={{ width: width * 0.8, minHeight: 200 }}
+                className='px-2'
+              >
+                <TaskColumn
+                  title={item.username}
+                  tasks={participantTasks(item.id)}
+                  isColumnOwner={item.isCurrentUser}
+                  onToggleTask={handleToggleTask}
+                  onDeleteTask={handleDeleteTask}
+                  onEditTask={handleEditTask}
+                  togglingTaskId={taskState.togglingTaskId}
+                  completionPercentage={showRankings ? item.stats.completionPercentage : undefined}
                 />
               </View>
             )}
-
-            {/* Task columns with horizontal scroll */}
-            <View className="flex-1 min-h-[200px] pl-4">
-              {participantColumnsData.length > 0 ? (
-                <FlatList
-                  data={participantColumnsData}
-                  horizontal
-                  pagingEnabled
-                  showsHorizontalScrollIndicator={false}
-                  keyExtractor={item => item.id.toString()}
-                  contentContainerStyle={{ gap: 16, flex: 1 }}
-                  renderItem={({ item }) => (
-                    <View style={{ width: width * 0.7, minHeight: 200 }}>
-                      <TaskColumn
-                        title={item.username}
-                        tasks={participantTasks(item.id)}
-                        isColumnOwner={item.isCurrentUser}
-                        onToggleTask={handleToggleTask}
-                        onDeleteTask={handleDeleteTask}
-                        onEditTask={handleEditTask}
-                        togglingTaskId={taskState.togglingTaskId}
-                        completionPercentage={showRankings ? item.stats.completionPercentage : undefined}
-                      />
-                    </View>
-                  )}
-                />
-              ) : (
-                <FlatList
-                  data={[{ key: 'share' }]}
-                  horizontal
-                  pagingEnabled
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ gap: 16, flex: 1 }}
-                  renderItem={() => (
-                    <View style={{ width: width * 0.8, minHeight: 200 }}>
-                      <ShareRoomCTA sessionId={session.uuid} />
-                    </View>
-                  )}
-                />
-              )}
-            </View>
-          </View>
-        {/* </SafeScrollView> */}
-      </ThemedView>
-    </>
+          />
+        ) : (
+          <FlatList
+            data={[{ key: 'share' }]}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: 16, flex: 1 }}
+            renderItem={() => (
+              <View style={{ width: width * 0.8, minHeight: 200 }}>
+                <ShareRoomCTA sessionId={session.uuid} />
+              </View>
+            )}
+          />
+        )}
+      </SafeAreaView>
+    </ThemedView>
   );
 }
 

@@ -43,7 +43,7 @@ export function ShareSessionMenu({ isOpen, onClose, sessionId }: ShareSessionMen
           Share this link with your friends to let them join.
         </Text>
       </View>
-      <View style={[styles.container, { borderTopColor: theme.border }]}> 
+      <View style={[styles.container, { borderTopColor: theme.border }]}>
         <TouchableOpacity
           onPress={handleCopyLink}
           style={[styles.button, { backgroundColor: `${theme.brand.background}20` }]}

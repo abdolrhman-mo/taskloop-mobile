@@ -4,7 +4,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Task } from '@/types/session';
 import { CheckCircle, Circle } from 'lucide-react-native';
 import React from 'react';
-import { View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { TaskItem } from './TaskItem';
 
 interface TaskColumnProps {
@@ -48,7 +48,7 @@ function TaskSection({
   togglingTaskId,
 }: TaskSectionProps) {
   return (
-    <View className="gap-3">
+    <View className="gap-3 pb-4">
       <View className="flex-row items-center gap-2">
         {icon}
         <ThemedText className="text-base font-semibold">{title}</ThemedText>
@@ -72,7 +72,7 @@ function TaskSection({
             </View>
           ))
         ) : (
-          <View style={{ backgroundColor: emptyBg }} className="p-3 rounded-lg items-center">
+          <View style={{ backgroundColor: emptyBg }} className="p-3 rounded-lg">
             <ThemedText style={{ color: emptyTextColor }} className="text-sm italic">
               {emptyText}
             </ThemedText>
@@ -124,32 +124,35 @@ export function TaskColumn({
   ];
 
   return (
-    <View className="overflow-hidden">
+    // <View className="overflow-hidden">
+    <View>
       {/* Header section with user name */}
       <ThemedText className="text-lg font-semibold">
         {title}
       </ThemedText>
 
       {/* Task lists section */}
-      <View className="py-4 gap-4">
-        {sections.map(section => (
+      <FlatList
+        data={sections}
+        className='py-4'
+        renderItem={({ item }) => (
           <TaskSection
-            key={section.key}
-            icon={section.icon}
-            title={section.title}
-            tasks={section.tasks}
-            emptyText={section.emptyText}
-            taskBg={section.taskBg}
-            emptyBg={section.emptyBg}
-            emptyTextColor={section.emptyTextColor}
+            key={item.key}
+            icon={item.icon}
+            title={item.title}
+            tasks={item.tasks}
+            emptyText={item.emptyText}
+            taskBg={item.taskBg}
+            emptyBg={item.emptyBg}
+            emptyTextColor={item.emptyTextColor}
             isColumnOwner={isColumnOwner}
             onToggleTask={onToggleTask}
             onDeleteTask={onDeleteTask}
             onEditTask={onEditTask}
             togglingTaskId={togglingTaskId}
           />
-        ))}
-      </View>
+        )}
+      />
     </View>
   );
 }

@@ -131,7 +131,7 @@ export function Nav({ isDropdownOpen, setIsDropdownOpen, children }: NavProps) {
 
           {/* Right section - User controls */}
           <View style={styles.controlsContainer}>
-            {/* <ThemeToggle /> */}
+            <ThemeToggle />
           
             {/* User menu */}
             {username && (
