@@ -6,6 +6,7 @@ import { CheckCircle, Circle } from 'lucide-react-native';
 import React from 'react';
 import { FlatList, View } from 'react-native';
 import { TaskItem } from './TaskItem';
+import { ActivityIndicator } from 'react-native';
 
 interface TaskColumnProps {
   title: string;
@@ -16,6 +17,7 @@ interface TaskColumnProps {
   onEditTask: (taskId: number, newText: string) => Promise<void>;
   togglingTaskId: number | null;
   completionPercentage?: number;
+  isTasksLoading?: boolean;
 }
 
 interface TaskSectionProps {
@@ -31,6 +33,13 @@ interface TaskSectionProps {
   onDeleteTask: (taskId: number) => Promise<void>;
   onEditTask: (taskId: number, newText: string) => Promise<void>;
   togglingTaskId: number | null;
+  isTasksLoading?: boolean;
+}
+
+function SkeletonTaskItem() {
+  return (
+    <View className="rounded-lg bg-gray-200 h-10 mb-2 w-full animate-pulse" />
+  );
 }
 
 function TaskSection({
@@ -46,6 +55,7 @@ function TaskSection({
   onDeleteTask,
   onEditTask,
   togglingTaskId,
+  isTasksLoading,
 }: TaskSectionProps) {
   // TODO: Add loading skeleton
 
@@ -56,7 +66,13 @@ function TaskSection({
         <ThemedText className="text-base font-semibold">{title}</ThemedText>
       </View>
       <View className="gap-2">
-        {tasks.length > 0 ? (
+        {isTasksLoading ? (
+          <>
+            <SkeletonTaskItem />
+            <SkeletonTaskItem />
+            <SkeletonTaskItem />
+          </>
+        ) : tasks.length > 0 ? (
           tasks.map((task) => (
             <View
               key={task.id}
@@ -93,7 +109,8 @@ export function TaskColumn({
   onDeleteTask,
   onEditTask,
   togglingTaskId,
-  completionPercentage
+  completionPercentage,
+  isTasksLoading = false,
 }: TaskColumnProps) {
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
@@ -112,6 +129,7 @@ export function TaskColumn({
       taskBg: theme.background.todo_task,
       emptyBg: theme.background.primary,
       emptyTextColor: theme.typography.secondary,
+      isTasksLoading,
     },
     {
       key: 'done',
@@ -122,6 +140,7 @@ export function TaskColumn({
       taskBg: theme.background.done_task,
       emptyBg: theme.background.primary,
       emptyTextColor: theme.typography.secondary,
+      isTasksLoading,
     },
   ];
 
@@ -152,6 +171,7 @@ export function TaskColumn({
             onDeleteTask={onDeleteTask}
             onEditTask={onEditTask}
             togglingTaskId={togglingTaskId}
+            isTasksLoading={isTasksLoading}
           />
         )}
       />

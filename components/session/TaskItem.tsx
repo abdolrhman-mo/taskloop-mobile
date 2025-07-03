@@ -104,6 +104,7 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
           onPress={() => isColumnOwner && onToggle?.(task)}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
+          onLongPress={() => isColumnOwner && setShowActions(true)}
           disabled={isToggling || isDeleting || isEditing || !isColumnOwner}
           className="flex-1 flex-row items-center gap-1"
           style={({ pressed }) => [pressed && { opacity: 0.7 }]}

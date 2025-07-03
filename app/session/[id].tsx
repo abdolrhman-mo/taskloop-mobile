@@ -36,6 +36,7 @@ export default function SessionScreen() {
     tasks,
     user,
     loading,
+    loadingTasks,
     error,
     isParticipant,
     currentParticipant,
@@ -157,19 +158,6 @@ export default function SessionScreen() {
     }))
   ];
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    try {
-      if (typeof window !== 'undefined') {
-        window.location.reload();
-      } else {
-        // fallback: could call a refetch or navigation reset
-      }
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
   return (
     <ThemedView className="flex-1 py-4">
       <SafeAreaView className="flex-1">
@@ -228,16 +216,17 @@ export default function SessionScreen() {
                   onEditTask={handleEditTask}
                   togglingTaskId={taskState.togglingTaskId}
                   completionPercentage={showRankings ? item.stats.completionPercentage : undefined}
+                  isTasksLoading={loadingTasks}
                 />
               </View>
             )}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-                tintColor={theme.brand.background}
-              />
-            }
+            // refreshControl={
+            //   <RefreshControl
+            //     refreshing={refreshing}
+            //     onRefresh={handleRefresh}
+            //     tintColor={theme.brand.background}
+            //   />
+            // }
           />
         ) : (
           <FlatList
@@ -257,5 +246,3 @@ export default function SessionScreen() {
     </ThemedView>
   );
 }
-
-

@@ -26,6 +26,7 @@ interface UseSessionReturn {
   handleDeleteSession: () => Promise<void>;
   getSortedTasks: (tasks: Task[]) => Task[];
   getSortedParticipants: (participants: Session['participants']) => ParticipantWithStats[];
+  loadingTasks: boolean;
 }
 
 export function useSession(): UseSessionReturn {
@@ -35,6 +36,7 @@ export function useSession(): UseSessionReturn {
 
   // State management
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [loadingTasks, setLoadingTasks] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -97,11 +99,14 @@ export function useSession(): UseSessionReturn {
   // Periodic task updates
   useEffect(() => {
     const fetchTasks = async () => {
+      setLoadingTasks(true);
       try {
         const tasksResponse = await get<Task[]>(ENDPOINTS.SESSIONS.TASKS.LIST.path(id));
         setTasks(tasksResponse);
       } catch (err) {
         console.error('Failed to fetch tasks', err);
+      } finally {
+        setLoadingTasks(false);
       }
     };
 
@@ -249,6 +254,7 @@ export function useSession(): UseSessionReturn {
     tasks,
     user,
     loading: loading || userLoading,
+    loadingTasks,
     error,
     isParticipant,
     currentParticipant,
@@ -260,6 +266,6 @@ export function useSession(): UseSessionReturn {
     handleLeaveSession,
     handleDeleteSession,
     getSortedTasks,
-    getSortedParticipants
+    getSortedParticipants,
   };
 } 
