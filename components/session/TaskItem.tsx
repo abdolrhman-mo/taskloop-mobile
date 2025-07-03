@@ -5,11 +5,12 @@ import { Task } from '@/types/session';
 import {
   CheckCircle,
   Circle,
-  MoreVertical
+  MoreVertical,
+  Pencil,
+  Trash2
 } from 'lucide-react-native';
-import React from 'react';
-import { useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, TextInput, View, Text } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { ActivityIndicator, Pressable, TextInput, View, Text, Animated } from 'react-native';
 import { CustomModal } from '../common/CustomModal';
 
 interface TaskItemProps {
@@ -30,6 +31,7 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<TextInput>(null);
   const [showActions, setShowActions] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handleDelete = async () => {
     if (isDeleting) return;
@@ -75,40 +77,63 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
 
   const isChecked = task.is_done;
 
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.97,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  };
+
   return (
-    <View 
-      className={`px-2 py-3 rounded-lg ${isDeleting || isSaving ? 'opacity-50' : ''}`}
+    <Animated.View
+      style={{
+        transform: [{ scale: scaleAnim }],
+      }}
+      className={`py-3 rounded-lg ${isDeleting || isSaving ? 'opacity-50' : ''}`}
     >
       <View className="flex-row items-center gap-1">
-        {/* Checkbox */}
+        {/* Main pressable area for toggling */}
         <Pressable
           onPress={() => isColumnOwner && onToggle?.(task)}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
           disabled={isToggling || isDeleting || isEditing || !isColumnOwner}
-          className="p-1"
+          className="flex-1 flex-row items-center gap-1"
           style={({ pressed }) => [pressed && { opacity: 0.7 }]}
         >
-          {isChecked ? (
-            <CheckCircle size={16} color="#22C55E" />
-          ) : (
-            <Circle size={16} color="#EAB308" />
-          )}
+          <View className="p-3">
+            {isChecked ? (
+              <CheckCircle size={16} color="#22C55E" />
+            ) : (
+              <Circle size={16} color="#EAB308" />
+            )}
+          </View>
+          <ThemedText 
+            className={`flex-1 ${task.is_done ? 'line-through' : ''} ${(isToggling || isDeleting || isSaving) ? 'opacity-50' : ''}`}
+          >
+            {task.text}
+          </ThemedText>
         </Pressable>
-        {/* Task text */}
-        <ThemedText 
-          className={`flex-1 ${task.is_done ? 'line-through' : ''} ${(isToggling || isDeleting || isSaving) ? 'opacity-50' : ''}`}
-        >
-          {task.text}
-        </ThemedText>
+        {/* More icon (actions) */}
         {isColumnOwner && (
           <Pressable
             onPress={() => setShowActions(true)}
-            className="p-2 rounded-full"
+            className="p-3 rounded-full"
             style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+            hitSlop={10}
           >
             <MoreVertical size={20} color={theme.typography.secondary} />
           </Pressable>
         )}
       </View>
+
       {/* Actions Modal */}
       <CustomModal isVisible={showActions} onClose={() => setShowActions(false)}>
         <View className="gap-2">
@@ -117,8 +142,9 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
               setShowActions(false);
               handleOpenEdit();
             }}
-            className="py-3 rounded bg-blue-100 items-center"
+            className="py-3 rounded bg-blue-100 items-center flex-row justify-center gap-2"
           >
+            <Pencil size={18} color="#2563eb" />
             <Text className="text-base font-medium text-blue-700">Edit</Text>
           </Pressable>
           <Pressable
@@ -126,8 +152,9 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
               setShowActions(false);
               await handleDelete();
             }}
-            className="py-3 rounded bg-red-100 items-center"
+            className="py-3 rounded bg-red-100 items-center flex-row justify-center gap-2"
           >
+            <Trash2 size={18} color="#dc2626" />
             <Text className="text-base font-medium text-red-700">Delete</Text>
           </Pressable>
           <Pressable
@@ -138,6 +165,7 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
           </Pressable>
         </View>
       </CustomModal>
+
       {/* Edit Modal */}
       <CustomModal isVisible={isEditing} onClose={handleCloseEdit}>
         <View className="gap-4">
@@ -188,6 +216,6 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
           </View>
         </View>
       </CustomModal>
-    </View>
+    </Animated.View>
   );
 }

@@ -16,7 +16,8 @@ import { useSession } from '@/hooks/useSession';
 import { useNavigation } from '@react-navigation/native';
 import { Settings, Share2 } from 'lucide-react-native';
 import React, { useLayoutEffect, useState } from 'react';
-import { TouchableOpacity, View, FlatList, Dimensions, SafeAreaView } from 'react-native';
+import { TouchableOpacity, View, FlatList, Dimensions, SafeAreaView, RefreshControl } from 'react-native';
+import { NetworkError } from '@/components/common/NetworkError';
 
 const { width } = Dimensions.get('window');
 
@@ -28,6 +29,7 @@ export default function SessionScreen() {
   const [showRankings, setShowRankings] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const {
     session,
@@ -83,11 +85,14 @@ export default function SessionScreen() {
   // Error states
   if (error) {
     return (
-      <ThemedView className="flex-1 justify-center items-center">
-        <ThemedText className="text-center text-base" style={{ color: theme.error.DEFAULT }}>
-          {error}
-        </ThemedText>
-      </ThemedView>
+      <NetworkError message={error} onRetry={() => {
+        // reload the session data
+        if (typeof window !== 'undefined') {
+          window.location.reload();
+        } else {
+          // fallback: could call a refetch or navigation reset
+        }
+      }} />
     );
   }
 
@@ -152,8 +157,18 @@ export default function SessionScreen() {
     }))
   ];
 
-
-  // TODO: Swipe down to reload the whole page
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      if (typeof window !== 'undefined') {
+        window.location.reload();
+      } else {
+        // fallback: could call a refetch or navigation reset
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   return (
     <ThemedView className="flex-1 py-4">
@@ -216,6 +231,13 @@ export default function SessionScreen() {
                 />
               </View>
             )}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor={theme.brand.background}
+              />
+            }
           />
         ) : (
           <FlatList

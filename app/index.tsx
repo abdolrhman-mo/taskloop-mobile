@@ -16,6 +16,7 @@ import { darkTheme, lightTheme, theme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useApi } from '@/hooks/useApi';
 import { Session, User } from '@/types/session';
+import { NetworkError } from '@/components/common/NetworkError';
 
 interface LeaveState {
   sessionId: string | null;
@@ -192,7 +193,7 @@ export default function HomeScreen() {
               {loading && <LoadingSpinner containerStyle={styles.loadingContainer} />}
               
               {!loading && error && (
-                <ErrorState 
+                <NetworkError 
                   message={error} 
                   onRetry={() => {
                     setError(null);

@@ -47,6 +47,8 @@ function TaskSection({
   onEditTask,
   togglingTaskId,
 }: TaskSectionProps) {
+  // TODO: Add loading skeleton
+
   return (
     <View className="gap-3 pb-4">
       <View className="flex-row items-center gap-2">
