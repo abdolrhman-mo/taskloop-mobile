@@ -5,12 +5,11 @@ import { Task } from '@/types/session';
 import {
   CheckCircle,
   Circle,
-  Pencil,
-  Trash2
+  MoreVertical
 } from 'lucide-react-native';
 import React from 'react';
 import { useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, TextInput, View, Text } from 'react-native';
 import { CustomModal } from '../common/CustomModal';
 
 interface TaskItemProps {
@@ -30,6 +29,7 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
   const [editText, setEditText] = useState(task.text);
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<TextInput>(null);
+  const [showActions, setShowActions] = useState(false);
 
   const handleDelete = async () => {
     if (isDeleting) return;
@@ -100,31 +100,44 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
           {task.text}
         </ThemedText>
         {isColumnOwner && (
-          <View className="flex-row gap-2">
-            <Pressable
-              onPress={handleOpenEdit}
-              disabled={isDeleting || isSaving}
-              className="p-1 rounded"
-              style={({ pressed }) => [pressed && { opacity: 0.7 }]}
-            >
-              <Pencil size={16} color={theme.typography.secondary} />
-            </Pressable>
-            <Pressable
-              onPress={handleDelete}
-              disabled={isDeleting || isSaving}
-              className="p-1 rounded"
-              style={({ pressed }) => [pressed && { opacity: 0.7 }]}
-            >
-              {isDeleting ? (
-                <ActivityIndicator size="small" color={theme.error.DEFAULT} />
-              ) : (
-                <Trash2 size={16} color={theme.error.DEFAULT} />
-              )}
-            </Pressable>
-          </View>
+          <Pressable
+            onPress={() => setShowActions(true)}
+            className="p-2 rounded-full"
+            style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+          >
+            <MoreVertical size={20} color={theme.typography.secondary} />
+          </Pressable>
         )}
       </View>
-      
+      {/* Actions Modal */}
+      <CustomModal isVisible={showActions} onClose={() => setShowActions(false)}>
+        <View className="gap-2">
+          <Pressable
+            onPress={() => {
+              setShowActions(false);
+              handleOpenEdit();
+            }}
+            className="py-3 rounded bg-blue-100 items-center"
+          >
+            <Text className="text-base font-medium text-blue-700">Edit</Text>
+          </Pressable>
+          <Pressable
+            onPress={async () => {
+              setShowActions(false);
+              await handleDelete();
+            }}
+            className="py-3 rounded bg-red-100 items-center"
+          >
+            <Text className="text-base font-medium text-red-700">Delete</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setShowActions(false)}
+            className="py-3 rounded bg-gray-100 items-center"
+          >
+            <Text className="text-base font-medium text-gray-700">Cancel</Text>
+          </Pressable>
+        </View>
+      </CustomModal>
       {/* Edit Modal */}
       <CustomModal isVisible={isEditing} onClose={handleCloseEdit}>
         <View className="gap-4">
