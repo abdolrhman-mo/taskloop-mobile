@@ -180,10 +180,8 @@ export default function HomeScreen() {
                   {/* Test button */}
                   <TouchableOpacity
                     onPress={() => router.push('/test')}
-                    style={[
-                      styles.createButton,
-                      { backgroundColor: theme.brand.background }
-                    ]}>
+                    className="bg-red-500 text-white"
+                  >
                     <ThemedText style={[styles.createButtonText, { color: theme.brand.text }]}>
                       Test
                     </ThemedText>

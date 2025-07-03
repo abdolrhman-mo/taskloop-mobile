@@ -52,19 +52,18 @@ export default function MyHorizontalPager() {
       pagingEnabled
       showsHorizontalScrollIndicator={false}
       keyExtractor={(item) => item.toString()}
+      style={{ width }}
+      contentContainerStyle={{ paddingHorizontal: width * 0.15 }}
       renderItem={({ item }) => (
         <View
-          style={{
-            width: width * 0.8,
-            // alignItems: 'center',
-            // backgroundColor: 'lightblue',
-          }}
+          style={{ width: width * 0.7 }}
+          className='p-8 gap-4'
         >
-          <Text style={{ fontSize: 40 }}>{item.name}</Text>
+          <Text className="text-4xl text-red-500">{item.name}</Text>
           <FlatList
             data={item.todo}
             renderItem={({ item }) => (
-              <Text style={{ fontSize: 20 }}>{item}</Text>
+              <Text className="text-xl text-slate-600">{item}</Text>
             )}
           />
         </View>

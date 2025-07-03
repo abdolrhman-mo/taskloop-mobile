@@ -15,7 +15,7 @@ import { useSession } from '@/hooks/useSession';
 import { useNavigation } from '@react-navigation/native';
 import { Settings, Share2 } from 'lucide-react-native';
 import React, { useLayoutEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, FlatList, Dimensions } from 'react-native';
+import { TouchableOpacity, View, FlatList, Dimensions } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -52,17 +52,17 @@ export default function SessionScreen() {
     navigation.setOptions({
       headerTitle: loading ? 'loading...' : (session ? (session.name) : 'Study Room'),
       headerRight: () => (
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View className="flex-row items-center">
           <TouchableOpacity
             onPress={() => setIsSettingsOpen(true)}
-            style={[styles.triggerButton]}
+            className="flex-row items-center gap-2 px-4 py-2 rounded-lg"
             activeOpacity={0.7}
           >
             <Settings size={20} color={theme.typography.primary} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setIsShareOpen(true)}
-            style={[styles.triggerButton]}
+            className="flex-row items-center gap-2 px-4 py-2 rounded-lg"
             activeOpacity={0.7}
           >
             <Share2 size={20} color={theme.typography.primary} />
@@ -82,8 +82,8 @@ export default function SessionScreen() {
   // Error states
   if (error) {
     return (
-      <ThemedView style={[styles.container, styles.centerContent]}>
-        <ThemedText style={[styles.errorText, { color: theme.error.DEFAULT }]}>
+      <ThemedView className="flex-1 justify-center items-center">
+        <ThemedText className="text-center text-base" style={{ color: theme.error.DEFAULT }}>
           {error}
         </ThemedText>
       </ThemedView>
@@ -92,8 +92,8 @@ export default function SessionScreen() {
 
   if (!session) {
     return (
-      <ThemedView style={[styles.container, styles.centerContent]}>
-        <ThemedText style={styles.errorText}>
+      <ThemedView className="flex-1 justify-center items-center">
+        <ThemedText className="text-center text-base">
           No study room found.
         </ThemedText>
       </ThemedView>
@@ -102,8 +102,8 @@ export default function SessionScreen() {
 
   if (!user) {
     return (
-      <ThemedView style={[styles.container, styles.centerContent]}>
-        <ThemedText style={styles.errorText}>
+      <ThemedView className="flex-1 justify-center items-center">
+        <ThemedText className="text-center text-base">
           Please log in to view this study room.
         </ThemedText>
       </ThemedView>
@@ -112,8 +112,8 @@ export default function SessionScreen() {
 
   if (!isParticipant) {
     return (
-      <ThemedView style={[styles.container, styles.centerContent]}>
-        <ThemedText style={styles.errorText}>
+      <ThemedView className="flex-1 justify-center items-center">
+        <ThemedText className="text-center text-base">
           You are not a participant in this study room.
         </ThemedText>
       </ThemedView>
@@ -152,31 +152,33 @@ export default function SessionScreen() {
   ];
 
   return (
-    <ThemedView style={styles.container}>
-      {/* <SafeScrollView style={styles.scrollView}> */}
-        <View style={styles.content}>
-          <View style={styles.mainContent}>
-            <SettingsMenu
-              isOpen={isSettingsOpen}
-              onClose={() => setIsSettingsOpen(false)}
-              session={session}
-              isCreator={Boolean(user && session.creator === user.id)}
-              onSessionUpdate={(updatedSession) => session && Object.assign(session, updatedSession)}
-              onSessionLeave={handleLeaveSession}
-              onSessionDelete={handleDeleteSession}
-              taskSortOrder={taskSortOrder}
-              onTaskSortChange={setTaskSortOrder}
-              showRankings={showRankings}
-              onShowRankingsChange={setShowRankings}
-            />
-            <ShareSessionMenu
-              isOpen={isShareOpen}
-              onClose={() => setIsShareOpen(false)}
-              sessionId={session.uuid}
-            />
+    <>
+      <SettingsMenu
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        session={session}
+        isCreator={Boolean(user && session.creator === user.id)}
+        onSessionUpdate={(updatedSession) => session && Object.assign(session, updatedSession)}
+        onSessionLeave={handleLeaveSession}
+        onSessionDelete={handleDeleteSession}
+        taskSortOrder={taskSortOrder}
+        onTaskSortChange={setTaskSortOrder}
+        showRankings={showRankings}
+        onShowRankingsChange={setShowRankings}
+      />
+      <ShareSessionMenu
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+        sessionId={session.uuid}
+      />
+
+      <ThemedView className="flex-1 py-4">
+        {/* <SafeScrollView className="flex-1"> */}
+          <View className="flex-1 gap-4">
+
             {/* Task input and controls */}
             {currentParticipant && (
-              <View style={styles.taskInputContainer}>
+              <View className="gap-4 px-4">
                 <TaskInput
                   onSubmit={handleAddTask}
                   isAdding={taskState.isAddingTask}
@@ -186,7 +188,7 @@ export default function SessionScreen() {
             )}
 
             {/* Task columns with horizontal scroll */}
-            <View style={styles.taskColumnsContainer}>
+            <View className="flex-1 min-h-[200px] pl-4">
               {participantColumnsData.length > 0 ? (
                 <FlatList
                   data={participantColumnsData}
@@ -194,9 +196,9 @@ export default function SessionScreen() {
                   pagingEnabled
                   showsHorizontalScrollIndicator={false}
                   keyExtractor={item => item.id.toString()}
-                  contentContainerStyle={styles.taskColumns}
+                  contentContainerStyle={{ gap: 16, flex: 1 }}
                   renderItem={({ item }) => (
-                    <View style={styles.taskColumn}>
+                    <View style={{ width: width * 0.7, minHeight: 200 }}>
                       <TaskColumn
                         title={item.username}
                         tasks={participantTasks(item.id)}
@@ -205,7 +207,6 @@ export default function SessionScreen() {
                         onDeleteTask={handleDeleteTask}
                         onEditTask={handleEditTask}
                         togglingTaskId={taskState.togglingTaskId}
-                        position={showRankings ? item.stats.position : undefined}
                         completionPercentage={showRankings ? item.stats.completionPercentage : undefined}
                       />
                     </View>
@@ -217,9 +218,9 @@ export default function SessionScreen() {
                   horizontal
                   pagingEnabled
                   showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.taskColumns}
+                  contentContainerStyle={{ gap: 16, flex: 1 }}
                   renderItem={() => (
-                    <View style={styles.taskColumn}>
+                    <View style={{ width: width * 0.8, minHeight: 200 }}>
                       <ShareRoomCTA sessionId={session.uuid} />
                     </View>
                   )}
@@ -227,69 +228,10 @@ export default function SessionScreen() {
               )}
             </View>
           </View>
-        </View>
-      {/* </SafeScrollView> */}
-    </ThemedView>
+        {/* </SafeScrollView> */}
+      </ThemedView>
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  centerContent: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  header: {
-    width: '100%',
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  backButton: {
-    marginBottom: 16,
-  },
-  mainContent: {
-    flex: 1,
-    gap: 16,
-  },
-  taskInputContainer: {
-    gap: 16,
-  },
-  taskColumnsContainer: {
-    flex: 1,
-    minHeight: 200,
-  },
-  taskColumns: {
-    flex: 1,
-    gap: 16,
-  },
-  taskColumn: {
-    width: width * 0.8,
-    minHeight: 200,
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-  },
-  errorText: {
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  triggerButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-});
+

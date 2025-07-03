@@ -8,8 +8,9 @@ import {
   Pencil,
   Trash2
 } from 'lucide-react-native';
-import React, { useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import React from 'react';
+import { useRef, useState } from 'react';
+import { ActivityIndicator, Pressable, TextInput, View } from 'react-native';
 
 interface TaskItemProps {
   task: Task;
@@ -64,19 +65,16 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
   const isChecked = task.is_done;
 
   return (
-    <View style={[
-      styles.container,
-      (isDeleting || isSaving) && styles.disabled
-    ]}>
-      <View style={styles.content}>
+    <View 
+      className={`px-2 py-3 rounded-lg ${isDeleting || isSaving ? 'opacity-50' : ''}`}
+    >
+      <View className="flex-row items-center gap-1">
         {/* Checkbox */}
         <Pressable
           onPress={() => isColumnOwner && onToggle?.(task)}
           disabled={isToggling || isDeleting || isEditing || !isColumnOwner}
-          style={({ pressed }) => [
-            styles.checkbox,
-            pressed && styles.pressed
-          ]}
+          className="p-1"
+          style={({ pressed }) => [pressed && { opacity: 0.7 }]}
         >
           {isChecked ? (
             <CheckCircle size={16} color="#22C55E" />
@@ -87,35 +85,34 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
         
         {/* Edit input or task text */}
         {isEditing ? (
-          <View style={styles.editContainer}>
+          <View className="flex-1 flex-row gap-2 items-center">
             <TextInput
               ref={inputRef as React.RefObject<TextInput>}
               value={editText}
               onChangeText={setEditText}
-              style={[
-                styles.input,
-                { 
-                  backgroundColor: theme.background.secondary,
-                  color: theme.typography.primary,
-                  borderColor: theme.border
-                }
-              ]}
+              style={{
+                backgroundColor: theme.background.secondary,
+                color: theme.typography.primary,
+                borderColor: theme.border,
+              }}
+              className="flex-1 px-2 py-1 rounded border text-base"
               editable={!isSaving}
               autoFocus
             />
             <Pressable
               onPress={handleEdit}
               disabled={isSaving || !editText.trim() || editText === task.text}
-              style={[
-                styles.saveButton,
+              style={({ pressed }) => [
                 { backgroundColor: theme.brand.background },
-                (isSaving || !editText.trim() || editText === task.text) && styles.disabledButton
+                pressed && { opacity: 0.7 },
+                (isSaving || !editText.trim() || editText === task.text) && { opacity: 0.5 },
               ]}
+              className="px-3 py-1 rounded justify-center items-center"
             >
               {isSaving ? (
                 <ActivityIndicator size="small" color={theme.brand.text} />
               ) : (
-                <ThemedText style={[styles.saveButtonText, { color: theme.brand.text }]}>
+                <ThemedText style={{ color: theme.brand.text }} className="text-sm font-medium">
                   Save
                 </ThemedText>
               )}
@@ -124,33 +121,25 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
         ) : (
           <>
             <ThemedText 
-              style={[
-                styles.taskText,
-                task.is_done && styles.completedTask,
-                (isToggling || isDeleting || isSaving) && styles.disabledText
-              ]}
+              className={`flex-1 ${task.is_done ? 'line-through' : ''} ${(isToggling || isDeleting || isSaving) ? 'opacity-50' : ''}`}
             >
               {task.text}
             </ThemedText>
             {isColumnOwner && !isEditing && (
-              <View style={styles.actions}>
+              <View className="flex-row gap-2">
                 <Pressable
                   onPress={() => setIsEditing(true)}
                   disabled={isDeleting || isSaving}
-                  style={({ pressed }) => [
-                    styles.actionButton,
-                    pressed && styles.pressed
-                  ]}
+                  className="p-1 rounded"
+                  style={({ pressed }) => [pressed && { opacity: 0.7 }]}
                 >
                   <Pencil size={16} color={theme.typography.secondary} />
                 </Pressable>
                 <Pressable
                   onPress={handleDelete}
                   disabled={isDeleting || isSaving}
-                  style={({ pressed }) => [
-                    styles.actionButton,
-                    pressed && styles.pressed
-                  ]}
+                  className="p-1 rounded"
+                  style={({ pressed }) => [pressed && { opacity: 0.7 }]}
                 >
                   {isDeleting ? (
                     <ActivityIndicator size="small" color={theme.error.DEFAULT} />
@@ -166,71 +155,3 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 8,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  checkbox: {
-    padding: 4,
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  editContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    gap: 8,
-    alignItems: 'center',
-  },
-  input: {
-    flex: 1,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-    borderWidth: 1,
-    fontSize: 16,
-  },
-  saveButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  saveButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  disabledButton: {
-    opacity: 0.5,
-  },
-  taskText: {
-    flex: 1,
-    fontSize: 16,
-  },
-  completedTask: {
-    textDecorationLine: 'line-through',
-  },
-  disabledText: {
-    opacity: 0.5,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  actionButton: {
-    padding: 4,
-    borderRadius: 4,
-  },
-});
