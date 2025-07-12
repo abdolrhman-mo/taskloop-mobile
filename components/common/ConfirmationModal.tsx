@@ -52,59 +52,59 @@ export function ConfirmationModal({
     <CustomModal isVisible={isOpen} onClose={onClose}>
       <View style={styles.modal}>
         {/* Header */}
-        <View style={[styles.header, { borderBottomColor: theme.border }]}>
-          <Text style={[styles.title, { color: theme.typography.primary }]}> 
+          <View style={[styles.header, { borderBottomColor: theme.border }]}>
+            <Text style={[styles.title, { color: theme.typography.primary }]}>
             {title}
-          </Text>
-        </View>
-        {/* Message */}
-        <View style={styles.messageContainer}>
-          <View style={styles.messageContent}>
-            <AlertTriangle 
-              size={20}
-              color={isDestructive ? theme.error.DEFAULT : theme.typography.secondary}
-              style={styles.icon}
-            />
-            <Text style={[styles.message, { color: theme.typography.secondary }]}> 
-              {message}
             </Text>
           </View>
-        </View>
+        {/* Message */}
+          <View style={styles.messageContainer}>
+            <View style={styles.messageContent}>
+            <AlertTriangle 
+                size={20}
+                color={isDestructive ? theme.error.DEFAULT : theme.typography.secondary}
+                style={styles.icon}
+            />
+              <Text style={[styles.message, { color: theme.typography.secondary }]}>
+              {message}
+              </Text>
+            </View>
+          </View>
         {/* Actions */}
-        <View style={[styles.actions, { borderTopColor: theme.border }]}> 
-          <TouchableOpacity
-            onPress={onConfirm}
+          <View style={[styles.actions, { borderTopColor: theme.border }]}>
+            <TouchableOpacity
+              onPress={onConfirm}
             disabled={isConfirming}
-            style={[
-              styles.button,
-              styles.confirmButton,
-              { 
-                backgroundColor: isDestructive ? theme.error.DEFAULT : theme.brand.background,
-                opacity: isConfirming ? 0.5 : 1,
-              }
-            ]}
+              style={[
+                styles.button,
+                styles.confirmButton,
+                { 
+              backgroundColor: isDestructive ? theme.error.DEFAULT : theme.brand.background,
+                  opacity: isConfirming ? 0.5 : 1,
+                }
+              ]}
           >
-            <Text style={[styles.buttonText, { color: theme.brand.text }]}> 
-              {confirmText}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={onClose}
+              <Text style={[styles.buttonText, { color: theme.brand.text }]}>
+            {confirmText}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onClose}
             disabled={isConfirming}
-            style={[
-              styles.button,
-              styles.cancelButton,
-              { 
-                backgroundColor: `${theme.typography.secondary}20`,
-                opacity: isConfirming ? 0.5 : 1,
-              }
-            ]}
+              style={[
+                styles.button,
+                styles.cancelButton,
+                { 
+              backgroundColor: `${theme.typography.secondary}20`,
+                  opacity: isConfirming ? 0.5 : 1,
+                }
+              ]}
           >
-            <Text style={[styles.buttonText, { color: theme.typography.secondary }]}> 
-              Cancel
-            </Text>
-          </TouchableOpacity>
-        </View>
+              <Text style={[styles.buttonText, { color: theme.typography.secondary }]}>
+            Cancel
+              </Text>
+            </TouchableOpacity>
+          </View>
       </View>
     </CustomModal>
   );

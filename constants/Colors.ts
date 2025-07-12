@@ -10,6 +10,7 @@ export const lightTheme = {
   brand: {
     text: '#ffffff',
     background: '#269DD9',
+    backgroundPressed: '#1E7BA6',
     hover: '#6d28d9', // Violet-700
   },
   typography: {
@@ -36,6 +37,7 @@ export const darkTheme = {
   brand: {
     text: '#FFFFFF',
     background: '#269DD9',
+    backgroundPressed: '#1E7BA6',
     hover: '#2dd4bf',       // Teal-400 for interactive hover
   },
   typography: {

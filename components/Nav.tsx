@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { ChevronDown, LogOut } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import { ConfirmationModal } from './common/ConfirmationModal';
 import { DropdownMenu } from './common/DropdownMenu';
 import { Logo } from './common/Logo';
@@ -104,25 +104,22 @@ export function Nav({ isDropdownOpen, setIsDropdownOpen, children }: NavProps) {
     }
   ];
 
-  return (
+    return (
     <>
-      <View style={[
-        styles.container, 
-        { 
-          backgroundColor: theme.background.primary, 
+      <View 
+        style={{ 
+          backgroundColor: theme.background.primary,
           paddingTop: insets.top,
-          height: insets.top + 60, // 60px for nav content
-        }
-      ]}>
-        <View style={styles.content}>
+        }}
+        className="w-full py-3 px-4 border-b border-gray-200 dark:border-gray-700"
+      >
+        <View className="flex-row items-center justify-between">
           {/* Left section - Logo */}
-          <View style={styles.logoContainer}>
-            <Logo />
-          </View>
+          <Logo />
 
           {/* Middle section - Optional children */}
           {children && (
-            <View style={styles.childrenContainer}>
+            <View className="flex-1 items-center px-4">
               <Text style={{ color: theme.typography.primary }}>
                 {children}
               </Text>
@@ -130,33 +127,35 @@ export function Nav({ isDropdownOpen, setIsDropdownOpen, children }: NavProps) {
           )}
 
           {/* Right section - User controls */}
-          <View style={styles.controlsContainer}>
+          <View className="flex-row items-center gap-3">
             <ThemeToggle />
           
             {/* User menu */}
             {username && (
-              <View style={styles.userMenuContainer} ref={dropdownRef}>
+              <View className="relative" ref={dropdownRef}>
                 <TouchableOpacity
                   onPress={() => setIsDropdownOpen(!isDropdownOpen)}
-                  style={styles.userButton}
+                  className="flex-row items-center gap-2 py-2 px-3 rounded-lg"
                 >
-                  <Text style={[styles.username, { color: theme.typography.primary }]}>
+                  <Text 
+                    style={{ color: theme.typography.primary }}
+                    className="font-medium"
+                  >
                     {username}
                   </Text>
                   <ChevronDown 
                     size={16} 
                     color={theme.typography.primary}
-                    style={[
-                      styles.chevron,
-                      isDropdownOpen && styles.chevronRotated
-                    ]}
+                    style={{
+                      transform: [{ rotate: isDropdownOpen ? '180deg' : '0deg' }]
+                    }}
                   />
                 </TouchableOpacity>
 
                 <DropdownMenu 
                   items={menuItems}
                   isOpen={isDropdownOpen}
-                  style={styles.dropdown}
+                  style={{ marginTop: 8 }}
                 />
               </View>
             )}
@@ -183,72 +182,3 @@ export function Nav({ isDropdownOpen, setIsDropdownOpen, children }: NavProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 50,
-    paddingVertical: 4,
-    paddingHorizontal: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-      },
-      android: {
-        elevation: 4, // Increase elevation for better visibility
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(0,0,0,0.1)', // Add subtle border
-      },
-    }),
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    maxWidth: 1280,
-    width: '100%',
-    alignSelf: 'center',
-  },
-  logoContainer: {
-    flexShrink: 0,
-  },
-  childrenContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-  },
-  controlsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  userMenuContainer: {
-    position: 'relative',
-  },
-  userButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-  },
-  username: {
-    fontWeight: '500',
-    fontSize: 14,
-  },
-  chevron: {
-    transform: [{ rotate: '0deg' }],
-  },
-  chevronRotated: {
-    transform: [{ rotate: '180deg' }],
-  },
-  dropdown: {
-    marginTop: 8,
-  },
-}); 

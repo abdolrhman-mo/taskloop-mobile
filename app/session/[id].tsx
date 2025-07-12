@@ -2,9 +2,7 @@
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { CustomSafeAreaView } from '@/components/common/CustomSafeAreaView';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
-import { SafeScrollView } from '@/components/common/SafeScrollView';
 import { SettingsMenu } from '@/components/session/SettingsMenu';
 import { ShareRoomCTA } from '@/components/session/ShareRoomCTA';
 import { ShareSessionMenu } from '@/components/session/ShareSessionMenu';
@@ -14,9 +12,9 @@ import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSession } from '@/hooks/useSession';
 import { useNavigation } from '@react-navigation/native';
-import { Settings, Share2 } from 'lucide-react-native';
+import { EllipsisVertical, Settings, Share, Share2, UserRoundPlus } from 'lucide-react-native';
 import React, { useLayoutEffect, useState } from 'react';
-import { TouchableOpacity, View, FlatList, Dimensions, SafeAreaView, RefreshControl } from 'react-native';
+import { TouchableOpacity, View, FlatList, Dimensions, SafeAreaView } from 'react-native';
 import { NetworkError } from '@/components/common/NetworkError';
 
 const { width } = Dimensions.get('window');
@@ -29,7 +27,6 @@ export default function SessionScreen() {
   const [showRankings, setShowRankings] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
 
   const {
     session,
@@ -58,18 +55,18 @@ export default function SessionScreen() {
       headerRight: () => (
         <View className="flex-row items-center">
           <TouchableOpacity
-            onPress={() => setIsSettingsOpen(true)}
-            className="flex-row items-center gap-2 px-4 py-2 rounded-lg"
+            onPress={() => setIsShareOpen(true)}
+            className="flex-row items-center gap-2 p-4 rounded-lg"
             activeOpacity={0.7}
           >
-            <Settings size={20} color={theme.typography.primary} />
+            <UserRoundPlus size={20} color={theme.typography.primary} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => setIsShareOpen(true)}
-            className="flex-row items-center gap-2 px-4 py-2 rounded-lg"
+            onPress={() => setIsSettingsOpen(true)}
+            className="flex-row items-center gap-2 p-4 rounded-lg"
             activeOpacity={0.7}
           >
-            <Share2 size={20} color={theme.typography.primary} />
+            <EllipsisVertical size={20} color={theme.typography.primary} />
           </TouchableOpacity>
         </View>
       ),
@@ -197,12 +194,13 @@ export default function SessionScreen() {
             data={participantColumnsData}
             horizontal
             snapToInterval={width * 0.8}
+            snapToAlignment='center'
             decelerationRate="fast"
             showsHorizontalScrollIndicator={false}
             keyExtractor={item => item.id.toString()}
             // contentContainerStyle={{ paddingHorizontal: width * 0.15 }}
             className='px-2'
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <View 
                 style={{ width: width * 0.8, minHeight: 200 }}
                 className='px-2'
@@ -216,10 +214,9 @@ export default function SessionScreen() {
                   onEditTask={handleEditTask}
                   togglingTaskId={taskState.togglingTaskId}
                   completionPercentage={showRankings ? item.stats.completionPercentage : undefined}
-                  isTasksLoading={loadingTasks}
                 />
-              </View>
-            )}
+            </View>
+          )}
             // refreshControl={
             //   <RefreshControl
             //     refreshing={refreshing}
@@ -237,9 +234,9 @@ export default function SessionScreen() {
             contentContainerStyle={{ gap: 16, flex: 1 }}
             renderItem={() => (
               <View style={{ width: width * 0.8, minHeight: 200 }}>
-                <ShareRoomCTA sessionId={session.uuid} />
-              </View>
-            )}
+                    <ShareRoomCTA sessionId={session.uuid} />
+                  </View>
+                )}
           />
         )}
       </SafeAreaView>

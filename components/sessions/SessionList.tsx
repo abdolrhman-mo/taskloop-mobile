@@ -2,7 +2,7 @@ import { SessionCard } from '@/components/sessions/SessionCard';
 import { ThemedText } from '@/components/ThemedText';
 import { Session, User } from '@/types/session';
 import React, { useMemo } from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 
 interface SessionListProps {
   sessions: Session[];
@@ -53,10 +53,10 @@ export function SessionList({
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1">
       {latestSession && (
-        <View style={styles.latestSection}>
-          <ThemedText type="title" style={styles.sectionTitle}>
+        <View className="mb-12">
+          <ThemedText type="title" className="text-2xl font-semibold mb-4 tracking-tight">
             Latest Room
           </ThemedText>
           <SessionCard 
@@ -74,21 +74,24 @@ export function SessionList({
       )}
 
       {otherSessions.length > 0 && (
-        <View style={styles.otherSection}>
-          <ThemedText type="title" style={styles.sectionTitle}>
+        <View className="flex-1">
+          <ThemedText type="title" className="text-xl font-semibold mb-4 tracking-tight">
             {latestSession ? 'Other Active Rooms' : 'All Rooms'}
           </ThemedText>
-          <View style={[
-            styles.otherSessionsGrid,
-            { gap: width >= 640 ? 32 : 24 } // sm:gap-8 (32px) vs gap-6 (24px)
-          ]}>
+          <View 
+            style={{ 
+              gap: width >= 640 ? 32 : 24,
+              marginHorizontal: -12 
+            }}
+            className="flex-row flex-wrap"
+          >
             {otherSessions.map(session => (
               <View 
                 key={session.uuid} 
-                style={[
-                  styles.gridItem,
-                  { width: `${100 / columnCount}%` }
-                ]}
+                style={{ 
+                  width: `${100 / columnCount}%`,
+                  paddingHorizontal: 12
+                }}
               >
                 <SessionCard 
                   session={session}
@@ -109,29 +112,3 @@ export function SessionList({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  latestSection: {
-    marginTop: 32, // mt-8
-    marginBottom: 48, // mb-12
-  },
-  otherSection: {
-    flex: 1,
-  },
-  sectionTitle: {
-    fontSize: 24, // text-2xl
-    fontWeight: '600', // font-semibold
-    marginBottom: 16, // mb-4
-    letterSpacing: -0.5, // tracking-tight
-  },
-  otherSessionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: -12, // Compensate for grid item padding
-  },
-  gridItem: {
-    paddingHorizontal: 12, // Half of the gap
-  },
-}); 

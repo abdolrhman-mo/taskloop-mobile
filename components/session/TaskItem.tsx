@@ -7,6 +7,8 @@ import {
   Circle,
   MoreVertical,
   Pencil,
+  Square,
+  SquareCheck,
   Trash2
 } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';
@@ -110,11 +112,11 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
           style={({ pressed }) => [pressed && { opacity: 0.7 }]}
         >
           <View className="p-3">
-            {isChecked ? (
-              <CheckCircle size={16} color="#22C55E" />
-            ) : (
-              <Circle size={16} color="#EAB308" />
-            )}
+          {isChecked ? (
+            <SquareCheck size={16} color="#22C55E" style={{ backgroundColor: '#22C55E' }} />
+          ) : (
+            <Square size={16} color="#EAB308" />
+          )}
           </View>
           <ThemedText 
             className={`flex-1 ${task.is_done ? 'line-through' : ''} ${(isToggling || isDeleting || isSaving) ? 'opacity-50' : ''}`}
@@ -172,19 +174,19 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
         <View className="gap-4">
           <ThemedText className="text-lg font-semibold text-center">Edit Task</ThemedText>
           <ThemedText className="text-sm text-gray-500">Update your task below:</ThemedText>
-          <TextInput
-            ref={inputRef as React.RefObject<TextInput>}
-            value={editText}
-            onChangeText={setEditText}
+            <TextInput
+              ref={inputRef as React.RefObject<TextInput>}
+              value={editText}
+              onChangeText={setEditText}
             style={{
-              backgroundColor: theme.background.secondary,
-              color: theme.typography.primary,
+                  backgroundColor: theme.background.secondary,
+                  color: theme.typography.primary,
               borderColor: theme.border,
               textAlignVertical: 'top',
             }}
             className="px-3 py-2 rounded border text-base min-h-[72px] max-h-[144px]"
-            editable={!isSaving}
-            autoFocus
+              editable={!isSaving}
+              autoFocus
             multiline
             numberOfLines={3}
             maxLength={300}
@@ -215,7 +217,7 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
               )}
             </Pressable>
           </View>
-        </View>
+              </View>
       </CustomModal>
     </Animated.View>
   );
