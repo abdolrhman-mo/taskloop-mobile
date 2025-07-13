@@ -2,7 +2,7 @@ import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Portal } from '@gorhom/portal';
 import React, { useRef } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, TouchableWithoutFeedback, View } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
 interface CustomModalProps {
@@ -28,18 +28,43 @@ export function CustomModal({ isVisible, onClose, children }: CustomModalProps) 
     <Portal>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 9999,
+          elevation: 9999,
+        }}
       >
-        <View style={[styles.container, { backgroundColor: 'rgba(0,0,0,0.3)' }]}>
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+            elevation: 9999,
+            backgroundColor: 'rgba(0,0,0,0.3)',
+          }}
+        >
           <TouchableWithoutFeedback onPress={handleClose}>
-            <View style={styles.overlay}>
+            <View className="flex-1 justify-center items-center">
               <TouchableWithoutFeedback>
                 <Animatable.View 
                   ref={animRef}
                   animation={isVisible ? "fadeIn" : undefined}
                   duration={300}
                   easing="ease-in-out"
-                  style={[styles.content, { backgroundColor: theme.background.secondary }]}
+                  className="p-4 overflow-hidden"
+                  style={{ 
+                    backgroundColor: theme.background.secondary,
+                    width: '90%',
+                    maxHeight: '80%',
+                    borderRadius: 16,
+                  }}
                 >
                   <ScrollView>
                     {children}
@@ -53,27 +78,3 @@ export function CustomModal({ isVisible, onClose, children }: CustomModalProps) 
     </Portal>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 9999,
-    elevation: 9999,
-  },
-  overlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    padding: 16,
-    width: '90%',
-    maxHeight: '80%',
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-}); 

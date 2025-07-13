@@ -3,8 +3,9 @@ import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Task } from '@/types/session';
 import { CheckCircle, Circle } from 'lucide-react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { FlatList, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { TaskItem } from './TaskItem';
 
 interface TaskColumnProps {
@@ -117,6 +118,17 @@ export function TaskColumn({
 }: TaskColumnProps) {
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
+  
+  // State for overflow detection
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(0);
+
+  // Check if content overflows container
+  const checkOverflow = (contentH: number, containerH: number) => {
+    setIsOverflowing(contentH > containerH);
+    console.log('isOverflowing', isOverflowing);
+  };
 
   const activeTasks = tasks.filter(task => !task.is_done);
   const completedTasks = tasks.filter(task => task.is_done);
@@ -160,6 +172,15 @@ export function TaskColumn({
       <FlatList
         data={sections}
         className='py-4'
+        onLayout={(event) => {
+          const height = event.nativeEvent.layout.height;
+          setContainerHeight(height);
+          checkOverflow(contentHeight, height);
+        }}
+        onContentSizeChange={(width, height) => {
+          setContentHeight(height);
+          checkOverflow(height, containerHeight);
+        }}
         renderItem={({ item }) => (
           <TaskSection
             key={item.key}
@@ -178,6 +199,27 @@ export function TaskColumn({
           />
         )}
       />
+      
+      {/* Inset shadow gradient when content overflows */}
+      {/* {isOverflowing && ( */}
+        <LinearGradient
+          colors={[
+            'transparent',
+            `${theme.background.secondary}90`, // 40% opacity
+            `${theme.background.secondary}40`, // 90% opacity
+            theme.background.secondary // Full opacity at bottom
+          ]}
+          locations={[0, 0.2, 0.8, 1]} // Control gradient distribution
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 60,
+            pointerEvents: 'none',
+          }}
+        />
+      {/* )} */}
     </View>
   );
 }

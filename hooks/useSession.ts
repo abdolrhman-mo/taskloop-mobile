@@ -13,12 +13,11 @@ interface UseSessionReturn {
   isParticipant: boolean;
   currentParticipant: Participant | null;
   taskState: {
-    addingTask: boolean;
     togglingTaskId: number | null;
     error: string | null;
     isAddingTask: boolean;
   };
-  handleAddTask: (text: string) => Promise<void>;
+  handleAddTask: (text: string, is_done?: boolean) => Promise<void>;
   handleToggleTask: (task: Task) => Promise<void>;
   handleDeleteTask: (taskId: number) => Promise<void>;
   handleEditTask: (taskId: number, newText: string) => Promise<void>;
@@ -43,7 +42,6 @@ export function useSession(): UseSessionReturn {
   const [userLoading, setUserLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const [taskState, setTaskState] = useState({
-    addingTask: false,
     togglingTaskId: null as number | null,
     error: null as string | null,
     isAddingTask: false
@@ -118,17 +116,28 @@ export function useSession(): UseSessionReturn {
   }, [get, id]);
 
   // Task management handlers
-  const handleAddTask = async (text: string) => {
+  const handleAddTask = async (text: string, is_done?: boolean) => {
     if (!session || !currentParticipant) return;
 
-    setTaskState(prev => ({ ...prev, addingTask: true, error: null }));
+    setTaskState(prev => ({ ...prev, isAddingTask: true, error: null }));
 
     try {
+      // First, create the task normally
       const createdTask = await post<Task>(
         ENDPOINTS.SESSIONS.TASKS.ADD.path(session.uuid),
         { text, user_id: currentParticipant.id }
       );
-      setTasks(prevTasks => [...prevTasks, createdTask]);
+      
+      // If the task should be marked as done, update it immediately
+      let finalTask = createdTask;
+      if (is_done) {
+        finalTask = await put<Task>(
+          ENDPOINTS.SESSIONS.TASKS.UPDATE.path(id, createdTask.id.toString()),
+          { ...createdTask, is_done: true }
+        );
+      }
+      
+      setTasks(prevTasks => [...prevTasks, finalTask]);
     } catch (err) {
       console.error('Failed to add task', err);
       setTaskState(prev => ({
@@ -136,7 +145,7 @@ export function useSession(): UseSessionReturn {
         error: 'Failed to add task. Please try again.'
       }));
     } finally {
-      setTaskState(prev => ({ ...prev, addingTask: false }));
+      setTaskState(prev => ({ ...prev, isAddingTask: false }));
     }
   };
 

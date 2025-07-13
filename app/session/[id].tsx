@@ -7,16 +7,17 @@ import { SettingsMenu } from '@/components/session/SettingsMenu';
 import { ShareRoomCTA } from '@/components/session/ShareRoomCTA';
 import { ShareSessionMenu } from '@/components/session/ShareSessionMenu';
 import { TaskColumn } from '@/components/session/TaskColumn';
-import { TaskInput } from '@/components/session/TaskInput';
 import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSession } from '@/hooks/useSession';
 import { useNavigation } from '@react-navigation/native';
-import { EllipsisVertical, UserRoundPlus } from 'lucide-react-native';
+import { EllipsisVertical, Plus, UserRoundPlus } from 'lucide-react-native';
 import React, { useLayoutEffect, useState, useRef } from 'react';
-import { TouchableOpacity, View, FlatList, Dimensions, SafeAreaView } from 'react-native';
+import { TouchableOpacity, View, FlatList, Dimensions, SafeAreaView, Text } from 'react-native';
 import { NetworkError } from '@/components/common/NetworkError';
 import { AnimatedChevronButton } from '@/components/common/AnimatedChevronButton';
+import { FontAwesome } from '@expo/vector-icons';
+import { TaskInputAccessory } from '@/components/session/TaskInputAccessory';
 
 const { width } = Dimensions.get('window');
 
@@ -30,7 +31,15 @@ export default function SessionScreen() {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [showChevron, setShowChevron] = useState(false);
+  const [isAddingTask, setIsAddingTask] = useState(false);
+  const [newTask, setNewTask] = useState('');
+  const [newTaskIsDone, setNewTaskIsDone] = useState(false);
   const flatListRef = useRef<FlatList>(null);
+
+  // Handle toggle during task creation
+  const handleToggleInEditMode = () => {
+    setNewTaskIsDone(!newTaskIsDone);
+  };
 
   const {
     session,
@@ -55,19 +64,32 @@ export default function SessionScreen() {
   // Set navigation options
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: loading ? 'loading...' : (session ? (session.name) : 'Study Room'),
+      headerTitle: () => (
+        <View className="flex-row items-center gap-2">
+          <View className="p-2 rounded-full border" style={{ backgroundColor: theme.background.primary, borderColor: theme.border, borderWidth: 1 }}>
+            <FontAwesome
+              name="users"
+              size={16}
+              color={theme.typography.primary}
+            />
+          </View>
+          <Text style={{ color: theme.typography.primary, fontSize: 16 }}>
+            {loading ? 'loading...' : (session ? session.name : 'Study Room')}
+          </Text>
+        </View>
+      ),
       headerRight: () => (
         <View className="flex-row items-center">
           <TouchableOpacity
             onPress={() => setIsShareOpen(true)}
-            className="flex-row items-center gap-2 p-4 rounded-lg"
+            className="flex-row items-center p-4 rounded-lg"
             activeOpacity={0.7}
           >
             <UserRoundPlus size={20} color={theme.typography.primary} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setIsSettingsOpen(true)}
-            className="flex-row items-center gap-2 p-4 rounded-lg"
+            className="flex-row items-center p-4 rounded-lg"
             activeOpacity={0.7}
           >
             <EllipsisVertical size={20} color={theme.typography.primary} />
@@ -207,107 +229,155 @@ export default function SessionScreen() {
           onClose={() => setIsShareOpen(false)}
           sessionId={session.uuid}
         />
+        
+        {/* Add Task Input Accessory */}
+        <TaskInputAccessory
+          isVisible={isAddingTask}
+          onClose={() => {
+            setIsAddingTask(false);
+            setNewTask('');
+            setNewTaskIsDone(false);
+          }}
+          mode="add"
+          text={newTask}
+          onTextChange={setNewTask}
+          isToggled={newTaskIsDone}
+          onToggle={handleToggleInEditMode}
+          onSubmit={async () => {
+            try {
+              await handleAddTask(newTask.trim(), newTaskIsDone);
+              setNewTask('');
+              setNewTaskIsDone(false);
+              setIsAddingTask(false);
+            } catch (error) {
+              // Error is handled by parent component
+            }
+          }}
+          isSubmitting={taskState.isAddingTask}
+        />
 
         <View className="flex-1">
+          {/* Task input and controls */}
+          {/* {currentParticipant && (
+            <View className="gap-4 px-4 pb-4">
+              <TaskInput
+                onSubmit={handleAddTask}
+                isAdding={taskState.isAddingTask}
+                error={taskState.error}
+              />
+            </View>
+          )} */}
 
-        {/* Task input and controls */}
-        {currentParticipant && (
-          <View className="gap-4 px-4 pb-4">
-            <TaskInput
-              onSubmit={handleAddTask}
-              isAdding={taskState.isAddingTask}
-              error={taskState.error}
-            />
-          </View>
-        )}
+          <TouchableOpacity 
+            onPress={() => setIsAddingTask(true)}
+            className="flex-row items-center justify-center gap-2 p-4 rounded-full border"
+            style={{ 
+              backgroundColor: theme.brand.background,
+              borderColor: theme.border,
+              position: 'absolute',
+              bottom: 50,
+              right: 20,
+              zIndex: 1000,
+              // shadowColor: '#000',
+              // shadowOffset: {
+              //   width: 0,
+              //   height: 2,
+              // },
+              // shadowOpacity: 0.25,
+              // shadowRadius: 3.84,
+              // elevation: 5,
+            }}
+          >
+            <Plus size={24} color={theme.brand.text} />
+          </TouchableOpacity>
 
-        {/* Task columns with horizontal scroll */}
-        {participantColumnsData.length > 0 ? (
-          <View className="flex-1">
-            <FlatList
-              ref={flatListRef}
-              data={participantColumnsData}
-              horizontal
-              snapToInterval={(width * 0.75) + 20}
-              snapToAlignment='center'
-              decelerationRate="fast"
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={item => item.id.toString()}
-              contentContainerStyle={{ paddingLeft: 4, paddingRight: 12 }}
-              ItemSeparatorComponent={() => <View style={{ width: 14 }} />}
-              onScroll={handleScroll}
-              scrollEventThrottle={16}
-              onViewableItemsChanged={onViewableItemsChanged}
-              viewabilityConfig={viewabilityConfig}
-              renderItem={({ item }) => (
-                <View
-                  style={{ 
-                    width: width * 0.75, 
-                    minHeight: 200, 
-                    backgroundColor: theme.background.secondary, 
-                    borderColor: theme.border 
-                  }}
-                  className='rounded-lg overflow-hidden border'
-                >
-                  <TaskColumn
-                    title={item.username}
-                    tasks={participantTasks(item.id)}
-                    isColumnOwner={item.isCurrentUser}
-                    onToggleTask={handleToggleTask}
-                    onDeleteTask={handleDeleteTask}
-                    onEditTask={handleEditTask}
-                    togglingTaskId={taskState.togglingTaskId}
-                    completionPercentage={showRankings ? item.stats.completionPercentage : undefined}
-                  />
-              </View>
-            )}
-              // refreshControl={
-              //   <RefreshControl
-              //     refreshing={refreshing}
-              //     onRefresh={handleRefresh}
-              //     tintColor={theme.brand.background}
-              //   />
-              // }
-            />
-            
-            {/* Pagination dots */}
-            {participantColumnsData.length > 1 && (
-              <View className="flex-row justify-center items-center py-4 mb-12">
-                {participantColumnsData.map((_, index) => (
+          {/* Task columns with horizontal scroll */}
+          {participantColumnsData.length > 0 ? (
+            <View className="flex-1">
+              <FlatList
+                ref={flatListRef}
+                data={participantColumnsData}
+                horizontal
+                snapToInterval={(width * 0.75) + 20}
+                snapToAlignment='center'
+                decelerationRate="fast"
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={item => item.id.toString()}
+                contentContainerStyle={{ paddingLeft: 4, paddingRight: 12 }}
+                ItemSeparatorComponent={() => <View style={{ width: 14 }} />}
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
+                onViewableItemsChanged={onViewableItemsChanged}
+                viewabilityConfig={viewabilityConfig}
+                renderItem={({ item }) => (
                   <View
-                    key={index}
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: currentPage === index ? theme.brand.background : theme.background.fourth,
-                      marginHorizontal: 4,
+                    style={{ 
+                      width: width * 0.75, 
+                      minHeight: 200, 
+                      backgroundColor: theme.background.secondary, 
+                      borderColor: theme.border 
                     }}
-                  />
-                ))}
-              </View>
-            )}
+                    className='rounded-lg overflow-hidden border'
+                  >
+                    <TaskColumn
+                      title={item.username}
+                      tasks={participantTasks(item.id)}
+                      isColumnOwner={item.isCurrentUser}
+                      onToggleTask={handleToggleTask}
+                      onDeleteTask={handleDeleteTask}
+                      onEditTask={handleEditTask}
+                      togglingTaskId={taskState.togglingTaskId}
+                      completionPercentage={showRankings ? item.stats.completionPercentage : undefined}
+                    />
+                </View>
+              )}
+                // refreshControl={
+                //   <RefreshControl
+                //     refreshing={refreshing}
+                //     onRefresh={handleRefresh}
+                //     tintColor={theme.brand.background}
+                //   />
+                // }
+              />
+              
+              {/* Pagination dots */}
+              {participantColumnsData.length > 1 && (
+                <View className="flex-row justify-center items-center py-4 mb-12">
+                  {participantColumnsData.map((_, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: 4,
+                        backgroundColor: currentPage === index ? theme.brand.background : theme.background.fourth,
+                        marginHorizontal: 4,
+                      }}
+                    />
+                  ))}
+                </View>
+              )}
 
-            {/* Animated Chevron Button */}
-            <AnimatedChevronButton
-              show={showChevron}
-              onPress={handleChevronPress}
+              {/* Animated Chevron Button */}
+              <AnimatedChevronButton
+                show={showChevron}
+                onPress={handleChevronPress}
+              />
+            </View>
+          ) : (
+            <FlatList
+              data={[{ key: 'share' }]}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 16, flex: 1 }}
+              renderItem={() => (
+                <View style={{ width: width * 0.8, minHeight: 200 }}>
+                  <ShareRoomCTA sessionId={session.uuid} />
+                </View>
+              )}
             />
-          </View>
-        ) : (
-          <FlatList
-            data={[{ key: 'share' }]}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 16, flex: 1 }}
-            renderItem={() => (
-              <View style={{ width: width * 0.8, minHeight: 200 }}>
-                <ShareRoomCTA sessionId={session.uuid} />
-              </View>
-            )}
-          />
-        )}
+          )}
         </View>
       </SafeAreaView>
     </ThemedView>
