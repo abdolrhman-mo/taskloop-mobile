@@ -15,7 +15,7 @@ export function ThemedStatusBar() {
   const { backgroundColor, style } = useSelector((state: RootState) => state.statusBar);
   
   // Determine background color
-  const bgColor = backgroundColor || theme.background.primary;
+  const bgColor = backgroundColor || theme.background.secondary;
   
   // Determine status bar style
   const statusBarStyle = style === 'auto' 

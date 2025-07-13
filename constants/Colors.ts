@@ -18,8 +18,8 @@ export const lightTheme = {
     secondary: '#45556c', // Slate-400
   },
   background: {
-    primary: '#fff', // Slate-100
-    secondary: '#ffffff', // White
+    primary: '#FAFAFA',
+    secondary: '#FFFFFF',
     tertiary: '#e2e8f0', // Slate-200
     fourth: '#cad5e2', // Slate-400
     todo_task: '#fff7e6', // Amber-50

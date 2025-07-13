@@ -75,7 +75,7 @@ export function SessionList({
 
       {otherSessions.length > 0 && (
         <View className="flex-1">
-          <ThemedText type="title" className="text-xl font-semibold mb-4 tracking-tight">
+          <ThemedText type="title" className="text-2xl font-semibold mb-4 tracking-tight">
             {latestSession ? 'Other Active Rooms' : 'All Rooms'}
           </ThemedText>
           <View 

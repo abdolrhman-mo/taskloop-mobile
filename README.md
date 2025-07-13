@@ -25,4 +25,19 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Understand project dependencies
+## Todo
+5️⃣ Animated Arrow
+👀 What:
+Add a pulsing down arrow or chevron icon at the bottom → visual nudge.
+
+### 📌 When to SHOW the arrow
+👉 The arrow should appear only when there’s more content to scroll.
+Example:
+- If the list is scrollable (not fully visible), show the arrow.
+- If the list is fully visible (fits on screen), hide the arrow — no need for a hint.
+
+### 📌 When to HIDE the arrow
+👉 When the user reaches the end → they don’t need a hint anymore.
+Example:
+- If you scroll to the bottom → hide the arrow.
+- Or if your data is short → hide it immediately.

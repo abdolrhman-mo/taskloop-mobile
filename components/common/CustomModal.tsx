@@ -39,7 +39,7 @@ export function CustomModal({ isVisible, onClose, children }: CustomModalProps) 
                   animation={isVisible ? "fadeIn" : undefined}
                   duration={300}
                   easing="ease-in-out"
-                  style={[styles.content, { backgroundColor: theme.background.primary }]}
+                  style={[styles.content, { backgroundColor: theme.background.secondary }]}
                 >
                   <ScrollView>
                     {children}

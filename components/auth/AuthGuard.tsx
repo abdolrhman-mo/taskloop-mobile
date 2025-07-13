@@ -50,7 +50,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         flex: 1, 
         justifyContent: 'center', 
         alignItems: 'center',
-        backgroundColor: theme.background.primary 
+        backgroundColor: theme.background.secondary 
       }}>
         <ActivityIndicator size="large" color={theme.brand.background} />
       </View>

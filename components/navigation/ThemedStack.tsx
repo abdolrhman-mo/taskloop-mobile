@@ -12,7 +12,7 @@ export default function ThemedStack() {
         <Stack
             screenOptions={{
                 headerStyle: {
-                    backgroundColor: theme.background.primary,
+                    backgroundColor: theme.background.secondary,
                 },
                 headerTintColor: theme.typography.primary,  // ← this sets back arrow and back button text color
                 // headerShadowVisible: false, // ✅ disables shadow cross-platform (React Navigation v6+)

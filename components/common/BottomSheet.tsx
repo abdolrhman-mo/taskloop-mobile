@@ -150,7 +150,7 @@ export function BottomSheet({ isVisible, onClose, children }: BottomSheetProps) 
               style={[
                 styles.content, 
                 { 
-                  backgroundColor: theme.background.primary,
+                  backgroundColor: theme.background.secondary,
                   height: height * 0.4,
                   transform: [{ translateY }],
                   paddingBottom: insets.bottom

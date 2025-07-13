@@ -55,20 +55,33 @@ function TaskSection({
   togglingTaskId,
 }: TaskSectionProps) {
   // TODO: Add loading skeleton
+  const { resolvedTheme } = useTheme();
+  const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
 
   return (
     <View className="gap-3 pb-4">
-      <View className="flex-row items-center gap-2">
-        {icon}
+      <View 
+        style={{ 
+          // borderColor: theme.border,
+          backgroundColor: theme.brand.background + '20',
+        }}
+        className="flex-row items-center justify-between gap-2 px-4 py-2 mx-4 rounded-lg"
+      >
         <ThemedText className="text-base font-semibold">{title}</ThemedText>
+        <ThemedText 
+          style={{ backgroundColor: theme.background.secondary }}
+          className="text-base font-semibold px-2 rounded-full"
+        >
+          {tasks.length}
+        </ThemedText>
       </View>
-      <View className="gap-2">
+      <View>
         {tasks.length > 0 ? (
           tasks.map((task) => (
             <View
               key={task.id}
-              style={{ backgroundColor: taskBg }}
-              className="rounded-lg overflow-hidden"
+              // style={{ backgroundColor: 'lightgray' }}
+              className="overflow-hidden"
             >
               <TaskItem
                 task={task}
@@ -81,7 +94,7 @@ function TaskSection({
             </View>
           ))
         ) : (
-          <View style={{ backgroundColor: emptyBg }} className="p-3 rounded-lg">
+          <View style={{ backgroundColor: emptyBg }} className="p-4 mx-4 rounded-lg">
             <ThemedText style={{ color: emptyTextColor }} className="text-sm italic">
               {emptyText}
             </ThemedText>
@@ -113,7 +126,7 @@ export function TaskColumn({
     {
       key: 'todo',
       icon: <Circle size={16} color="#EAB308" />,
-      title: 'To Do',
+      title: 'Your Tasks',
       tasks: activeTasks,
       emptyText: 'No tasks',
       taskBg: theme.background.todo_task,
@@ -123,7 +136,7 @@ export function TaskColumn({
     {
       key: 'done',
       icon: <CheckCircle size={16} color="#22C55E" />,
-      title: 'Done',
+      title: 'Completed',
       tasks: completedTasks,
       emptyText: 'No tasks done',
       taskBg: theme.background.done_task,
@@ -134,9 +147,12 @@ export function TaskColumn({
 
   return (
     // <View className="overflow-hidden">
-    <View>
+    <View className='flex-1'>
       {/* Header section with user name */}
-      <ThemedText className="text-lg font-semibold">
+      <ThemedText
+        style={{ borderBottomColor: theme.border }} 
+        className="text-lg font-semibold border-b p-4"
+      >
         {title}
       </ThemedText>
 

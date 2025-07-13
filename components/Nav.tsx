@@ -108,10 +108,11 @@ export function Nav({ isDropdownOpen, setIsDropdownOpen, children }: NavProps) {
     <>
       <View 
         style={{ 
-          backgroundColor: theme.background.primary,
+          backgroundColor: theme.background.secondary,
           paddingTop: insets.top,
+          borderColor: theme.border,
         }}
-        className="w-full py-3 px-4 border-b border-gray-200 dark:border-gray-700"
+        className="w-full py-3 px-4 border-b"
       >
         <View className="flex-row items-center justify-between">
           {/* Left section - Logo */}
