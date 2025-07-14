@@ -257,15 +257,15 @@ export default function SessionScreen() {
         />
 
         <View className="flex-1">
-          {/* Task input and controls */}
+        {/* Task input and controls */}
           {/* {currentParticipant && (
-            <View className="gap-4 px-4 pb-4">
-              <TaskInput
-                onSubmit={handleAddTask}
-                isAdding={taskState.isAddingTask}
-                error={taskState.error}
-              />
-            </View>
+          <View className="gap-4 px-4 pb-4">
+            <TaskInput
+              onSubmit={handleAddTask}
+              isAdding={taskState.isAddingTask}
+              error={taskState.error}
+            />
+          </View>
           )} */}
 
           <TouchableOpacity 
@@ -291,93 +291,93 @@ export default function SessionScreen() {
             <Plus size={24} color={theme.brand.text} />
           </TouchableOpacity>
 
-          {/* Task columns with horizontal scroll */}
-          {participantColumnsData.length > 0 ? (
-            <View className="flex-1">
-              <FlatList
-                ref={flatListRef}
-                data={participantColumnsData}
-                horizontal
-                snapToInterval={(width * 0.75) + 20}
-                snapToAlignment='center'
-                decelerationRate="fast"
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={item => item.id.toString()}
-                contentContainerStyle={{ paddingLeft: 4, paddingRight: 12 }}
-                ItemSeparatorComponent={() => <View style={{ width: 14 }} />}
-                onScroll={handleScroll}
-                scrollEventThrottle={16}
-                onViewableItemsChanged={onViewableItemsChanged}
-                viewabilityConfig={viewabilityConfig}
-                renderItem={({ item }) => (
-                  <View
-                    style={{ 
-                      width: width * 0.75, 
-                      minHeight: 200, 
-                      backgroundColor: theme.background.secondary, 
-                      borderColor: theme.border 
-                    }}
-                    className='rounded-lg overflow-hidden border'
-                  >
-                    <TaskColumn
-                      title={item.username}
-                      tasks={participantTasks(item.id)}
-                      isColumnOwner={item.isCurrentUser}
-                      onToggleTask={handleToggleTask}
-                      onDeleteTask={handleDeleteTask}
-                      onEditTask={handleEditTask}
-                      togglingTaskId={taskState.togglingTaskId}
-                      completionPercentage={showRankings ? item.stats.completionPercentage : undefined}
-                    />
-                </View>
-              )}
-                // refreshControl={
-                //   <RefreshControl
-                //     refreshing={refreshing}
-                //     onRefresh={handleRefresh}
-                //     tintColor={theme.brand.background}
-                //   />
-                // }
-              />
-              
-              {/* Pagination dots */}
-              {participantColumnsData.length > 1 && (
-                <View className="flex-row justify-center items-center py-4 mb-12">
-                  {participantColumnsData.map((_, index) => (
-                    <View
-                      key={index}
-                      style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: 4,
-                        backgroundColor: currentPage === index ? theme.brand.background : theme.background.fourth,
-                        marginHorizontal: 4,
-                      }}
-                    />
-                  ))}
-                </View>
-              )}
-
-              {/* Animated Chevron Button */}
-              <AnimatedChevronButton
-                show={showChevron}
-                onPress={handleChevronPress}
-              />
-            </View>
-          ) : (
+        {/* Task columns with horizontal scroll */}
+        {participantColumnsData.length > 0 ? (
+          <View className="flex-1">
             <FlatList
-              data={[{ key: 'share' }]}
+              ref={flatListRef}
+              data={participantColumnsData}
               horizontal
-              pagingEnabled
+              snapToInterval={(width * 0.75) + 20}
+              snapToAlignment='center'
+              decelerationRate="fast"
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ gap: 16, flex: 1 }}
-              renderItem={() => (
-                <View style={{ width: width * 0.8, minHeight: 200 }}>
-                  <ShareRoomCTA sessionId={session.uuid} />
-                </View>
-              )}
+              keyExtractor={item => item.id.toString()}
+              contentContainerStyle={{ paddingLeft: 4, paddingRight: 12 }}
+              ItemSeparatorComponent={() => <View style={{ width: 14 }} />}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              onViewableItemsChanged={onViewableItemsChanged}
+              viewabilityConfig={viewabilityConfig}
+              renderItem={({ item }) => (
+                <View
+                  style={{ 
+                    width: width * 0.75, 
+                    minHeight: 200, 
+                    backgroundColor: theme.background.secondary, 
+                    borderColor: theme.border 
+                  }}
+                  className='rounded-lg overflow-hidden border'
+                >
+                  <TaskColumn
+                    title={item.username}
+                    tasks={participantTasks(item.id)}
+                    isColumnOwner={item.isCurrentUser}
+                    onToggleTask={handleToggleTask}
+                    onDeleteTask={handleDeleteTask}
+                    onEditTask={handleEditTask}
+                    togglingTaskId={taskState.togglingTaskId}
+                    completionPercentage={showRankings ? item.stats.completionPercentage : undefined}
+                  />
+              </View>
+            )}
+              // refreshControl={
+              //   <RefreshControl
+              //     refreshing={refreshing}
+              //     onRefresh={handleRefresh}
+              //     tintColor={theme.brand.background}
+              //   />
+              // }
             />
-          )}
+            
+            {/* Pagination dots */}
+            {participantColumnsData.length > 1 && (
+              <View className="flex-row justify-center items-center py-4 mb-12">
+                {participantColumnsData.map((_, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: currentPage === index ? theme.brand.background : theme.background.fourth,
+                      marginHorizontal: 4,
+                    }}
+                  />
+                ))}
+              </View>
+            )}
+
+            {/* Animated Chevron Button */}
+            <AnimatedChevronButton
+              show={showChevron}
+              onPress={handleChevronPress}
+            />
+          </View>
+        ) : (
+          <FlatList
+            data={[{ key: 'share' }]}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: 16, flex: 1 }}
+            renderItem={() => (
+              <View style={{ width: width * 0.8, minHeight: 200 }}>
+                <ShareRoomCTA sessionId={session.uuid} />
+              </View>
+            )}
+          />
+        )}
         </View>
       </SafeAreaView>
     </ThemedView>

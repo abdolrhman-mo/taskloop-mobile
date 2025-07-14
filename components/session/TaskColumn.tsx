@@ -5,7 +5,7 @@ import { Task } from '@/types/session';
 import { CheckCircle, Circle } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { FlatList, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+// import { LinearGradient } from 'expo-linear-gradient';
 import { TaskItem } from './TaskItem';
 
 interface TaskColumnProps {
@@ -127,7 +127,6 @@ export function TaskColumn({
   // Check if content overflows container
   const checkOverflow = (contentH: number, containerH: number) => {
     setIsOverflowing(contentH > containerH);
-    console.log('isOverflowing', isOverflowing);
   };
 
   const activeTasks = tasks.filter(task => !task.is_done);
@@ -201,25 +200,20 @@ export function TaskColumn({
       />
       
       {/* Inset shadow gradient when content overflows */}
-      {/* {isOverflowing && ( */}
-        <LinearGradient
-          colors={[
-            'transparent',
-            `${theme.background.secondary}90`, // 40% opacity
-            `${theme.background.secondary}40`, // 90% opacity
-            theme.background.secondary // Full opacity at bottom
-          ]}
-          locations={[0, 0.2, 0.8, 1]} // Control gradient distribution
+      {/* {isOverflowing && (
+        <View
           style={{
             position: 'absolute',
             left: 0,
             right: 0,
             bottom: 0,
-            height: 60,
+            height: 25,
             pointerEvents: 'none',
+            backgroundColor: theme.background.secondary,
+            opacity: 0.8,
           }}
         />
-      {/* )} */}
+      )} */}
     </View>
   );
 }

@@ -1,6 +1,7 @@
 import { PortalProvider } from '@gorhom/portal';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { ThemedStatusBar } from '@/components/common/ThemedStatusBar';
 import ThemedStack from '@/components/navigation/ThemedStack';
@@ -11,6 +12,7 @@ import './global.css';
 export default function RootLayout() {
   return (
     <Provider store={store}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <ThemeProvider>
           <PortalProvider>
@@ -21,6 +23,7 @@ export default function RootLayout() {
           </PortalProvider>
         </ThemeProvider>
       </SafeAreaProvider>
+      </GestureHandlerRootView>
     </Provider>
   );
 }
