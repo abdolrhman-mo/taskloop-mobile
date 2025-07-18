@@ -6,9 +6,10 @@ import { ENDPOINTS } from '@/config/endpoints';
 import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useApi } from '@/hooks/useApi';
-import { useNavigation, useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import React, { useRef, useState } from 'react';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity, View } from 'react-native';
+import PagerView from 'react-native-pager-view';
 
 interface CreateSessionResponse {
   uuid: string;
@@ -20,16 +21,14 @@ export default function CreateSessionScreen() {
   const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
   const router = useRouter();
   const { post, get } = useApi();
+  
   const [sessionName, setSessionName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const navigation = useNavigation();
 
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: 'Create a study room',
-    });
-  }, [navigation]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const pagerRef = useRef(null);
+  const totalPages = 2;
 
   // Poll for session creation status
   const checkSessionStatus = async (sessionId: string) => {
@@ -74,203 +73,133 @@ export default function CreateSessionScreen() {
     }
   };
 
+  // const renderPaginationDots = () => {
+  //   return (
+  //     <View style={styles.paginationContainer}>
+  //       {Array.from({ length: totalPages }).map((_, index) => (
+  //         <TouchableOpacity
+  //           key={index}
+  //           style={[
+  //             styles.dot,
+  //             index === currentPage ? styles.activeDot : styles.inactiveDot,
+  //           ]}
+  //           onPress={() => pagerRef.current?.setPage(index)}
+  //         />
+  //       ))}
+  //     </View>
+  //   );
+  // };
+
+  const renderScreen1 = () => {
+    return (
+      <View 
+        className="p-6 rounded-xl border"
+        style={{ 
+          backgroundColor: theme.background.secondary,
+          borderColor: theme.border,
+        }}
+      >
+        <View className="mb-4">
+          <ThemedText className="text-sm font-medium mb-2" style={{ color: theme.typography.primary }}>
+              Study Room Name
+          </ThemedText>
+          <TextInput
+            value={sessionName}
+            onChangeText={setSessionName}
+              placeholder="Enter a name for your study room"
+            placeholderTextColor={theme.typography.secondary}
+            className="w-full px-4 py-3 text-base rounded-lg border"
+            style={{ 
+            borderColor: theme.border,
+            color: theme.typography.primary,
+                backgroundColor: theme.background.primary,
+              }}
+          maxLength={50}
+          autoFocus
+            editable={!isCreating}
+        />
+        </View>
+
+        {error && (
+          <View 
+            className="p-4 rounded-lg border mb-4"
+            style={{ 
+                backgroundColor: `${theme.error.DEFAULT}20`,
+              borderColor: `${theme.error.DEFAULT}40`,
+            }}
+          >
+            <ThemedText className="text-sm text-center" style={{ color: theme.error.DEFAULT }}>
+            {error}
+            </ThemedText>
+          </View>
+        )}
+
+        <View className="flex-row gap-3">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="flex-1 py-3 rounded-lg items-center justify-center border bg-transparent"
+            style={{ 
+              borderColor: theme.border,
+            }}
+            activeOpacity={0.8}
+          >
+            <ThemedText className="text-base font-medium" style={{ color: theme.typography.primary }}>
+            Cancel
+            </ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleCreateSession}
+              disabled={!sessionName.trim() || isCreating}
+            className="flex-1 min-w-[120px] py-3 rounded-lg items-center justify-center border"
+            style={{ 
+              backgroundColor: theme.brand.background,
+                opacity: (!sessionName.trim() || isCreating) ? 0.5 : 1,
+                borderColor: theme.brand.background,
+              }}
+            activeOpacity={0.8}
+          >
+            {isCreating ? (
+              <View className="flex-row items-center gap-2">
+                <ActivityIndicator size="small" color={theme.brand.text} />
+                <ThemedText className="text-base font-medium" style={{ color: theme.brand.text }}>
+                  Creating study room...
+                </ThemedText>
+              </View>
+            ) : (
+              <ThemedText className="text-base font-medium" style={{ color: theme.brand.text }}>
+                Create Study Room
+              </ThemedText>
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
+  const renderScreen2 = () => {
+    return (
+      <View>
+        <ThemedText>Screen 2</ThemedText>
+      </View>
+    );
+  };
+
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[styles.container, { backgroundColor: theme.background.primary }]}
+      className="flex-1"
+      style={{ backgroundColor: theme.background.primary }}
     >
       <SafeScrollView>
-        <View style={styles.content}>
-          {/* <View style={styles.header}>
-            <ThemedText style={styles.title}>Create New Session</ThemedText>
-            <ThemedText style={[styles.subtitle, { color: theme.typography.secondary }]}>
-              Start a new task sharing session
-            </ThemedText>
-          </View> */}
-          
-          <View style={[
-            styles.form,
-            { 
-              backgroundColor: theme.background.secondary,
-              borderColor: theme.border,
-            }
-          ]}>
-            <View style={styles.inputGroup}>
-              <ThemedText style={[styles.label, { color: theme.typography.primary }]}>
-                  Study Room Name
-              </ThemedText>
-              <TextInput
-                value={sessionName}
-                onChangeText={setSessionName}
-                  placeholder="Enter a name for your study room"
-                placeholderTextColor={theme.typography.secondary}
-                style={[
-                  styles.input,
-                  { 
-                borderColor: theme.border,
-                color: theme.typography.primary,
-                    backgroundColor: theme.background.primary,
-                  }
-                ]}
-              maxLength={50}
-              autoFocus
-                editable={!isCreating}
-            />
+        <View className="flex-1 p-4 max-w-[600px] w-full self-center">
+          <PagerView className="flex-1">
+            <View key="1">
+              {renderScreen1()}
             </View>
-
-            {error && (
-              <View style={[
-                styles.errorContainer,
-                { 
-                    backgroundColor: `${theme.error.DEFAULT}20`,
-                  borderColor: `${theme.error.DEFAULT}40`,
-                }
-              ]}>
-                <ThemedText style={[styles.error, { color: theme.error.DEFAULT }]}>
-                {error}
-                </ThemedText>
-              </View>
-            )}
-
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                onPress={() => router.back()}
-                style={[
-                  styles.button,
-                  styles.cancelButton,
-                  { 
-                  backgroundColor: theme.background.primary,
-                    borderColor: theme.border,
-                  }
-                ]}
-                activeOpacity={0.8}
-              >
-                <ThemedText style={{ color: theme.typography.primary }}>
-                Cancel
-                </ThemedText>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={handleCreateSession}
-                  disabled={!sessionName.trim() || isCreating}
-                style={[
-                  styles.button,
-                  styles.createButton,
-                  { 
-                  backgroundColor: theme.brand.background,
-                    opacity: (!sessionName.trim() || isCreating) ? 0.5 : 1
-                  }
-                ]}
-                activeOpacity={0.8}
-              >
-                {isCreating ? (
-                  <View style={styles.buttonContent}>
-                    <ActivityIndicator size="small" color={theme.brand.text} />
-                    <ThemedText style={[styles.buttonText, { color: theme.brand.text }]}>
-                      Creating study room...
-                    </ThemedText>
-                  </View>
-                ) : (
-                  <ThemedText style={[styles.buttonText, { color: theme.brand.text }]}>
-                    Create Study Room
-                  </ThemedText>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
+          </PagerView>
         </View>
       </SafeScrollView>
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-    maxWidth: 600,
-    width: '100%',
-    alignSelf: 'center',
-  },
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    marginBottom: 16,
-  },
-  form: {
-    padding: 24,
-    borderRadius: 12,
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 8,
-  },
-  input: {
-    width: '100%',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  errorContainer: {
-    padding: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    marginBottom: 16,
-  },
-  error: {
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  buttonGroup: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  button: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-  },
-  cancelButton: {
-    backgroundColor: 'transparent',
-  },
-  createButton: {
-    minWidth: 120,
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-});

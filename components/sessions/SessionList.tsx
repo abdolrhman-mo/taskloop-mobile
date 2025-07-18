@@ -36,9 +36,6 @@ export function SessionList({
     return sorted;
   }, [sessions]);
 
-  const latestSession = sortedSessions.length > 0 ? sortedSessions[0] : null;
-  const otherSessions = sortedSessions.length > 1 ? sortedSessions.slice(1) : [];
-
   // Calculate number of columns based on screen width
   const getColumnCount = () => {
     if (width >= 1024) return 3; // lg
@@ -54,46 +51,17 @@ export function SessionList({
 
   return (
     <View className="flex-1">
-      {latestSession && (
-        <View className="mb-12">
-          <ThemedText type="title" className="text-2xl font-semibold mb-4 tracking-tight">
-            Latest Room
-          </ThemedText>
-          <SessionCard 
-            session={latestSession} 
-            user={user}
-            isFeatured={true}
-            onLeave={onLeave}
-            onDelete={onDelete}
-            isLeaving={leaveState.sessionId === latestSession.uuid && leaveState.isLoading}
-            isDeleting={deleteState.sessionId === latestSession.uuid && deleteState.isLoading}
-            leaveError={leaveState.sessionId === latestSession.uuid ? leaveState.error : null}
-            deleteError={deleteState.sessionId === latestSession.uuid ? deleteState.error : null}
-          />
-        </View>
-      )}
-
-      {otherSessions.length > 0 && (
+      {sortedSessions.length > 0 && (
         <View className="flex-1">
-          <ThemedText type="title" className="text-2xl font-semibold mb-4 tracking-tight">
-            {latestSession ? 'Other Active Rooms' : 'All Rooms'}
+          <ThemedText type="title" className="text-xl font-semibold tracking-tight mb-2">
+            My Study Rooms
           </ThemedText>
           <View 
-            style={{ 
-              gap: width >= 640 ? 32 : 24,
-              marginHorizontal: -12 
-            }}
-            className="flex-row flex-wrap"
+            className="flex-col gap-4"
           >
-            {otherSessions.map(session => (
-              <View 
-                key={session.uuid} 
-                style={{ 
-                  width: `${100 / columnCount}%`,
-                  paddingHorizontal: 12
-                }}
-              >
+            {sortedSessions.map(session => (
                 <SessionCard 
+                  key={session.uuid}
                   session={session}
                   user={user}
                   onLeave={onLeave}
@@ -103,10 +71,10 @@ export function SessionList({
                   leaveError={leaveState.sessionId === session.uuid ? leaveState.error : null}
                   deleteError={deleteState.sessionId === session.uuid ? deleteState.error : null}
                 />
-              </View>
             ))}
           </View>
         </View>
+      
       )}
     </View>
   );

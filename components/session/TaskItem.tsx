@@ -92,7 +92,7 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
     try {
       // Update text if it changed
       if (hasTextChanged) {
-        await onEdit?.(task.id, editText.trim());
+      await onEdit?.(task.id, editText.trim());
       }
       
       // Apply pending toggle state if it was changed during editing
@@ -155,8 +155,8 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
   // Render swipe actions for edit and delete
   const renderRightActions = () => {
     if (!isColumnOwner) return null;
-    
-    return (
+
+  return (
       <View className="flex-row items-stretch">
         <TouchableOpacity 
           className="justify-center items-center w-[60px] bg-blue-500"
@@ -176,33 +176,33 @@ export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColum
 
   // Task content component
   const taskContent = (
-    <View 
-      className="flex-row items-center border-b"
-      style={{ backgroundColor: theme.background.secondary, borderColor: theme.border }}
-      onTouchStart={handleTouchStart}
-    >
+      <View 
+        className="flex-row items-center border-b"
+        style={{ backgroundColor: theme.background.secondary, borderColor: theme.border }}
+        onTouchStart={handleTouchStart}
+      >
       {/* Main toggle button */}
-      <Pressable
-        onPress={() => onToggle?.(task)}
-        disabled={isToggling || isDeleting || isEditing}
-        className="p-4"
-        style={({ pressed }) => [pressed && { opacity: 0.7 }]}
-      >
-        {isChecked ? (
-          <FontAwesome name="check-square" size={24} color={theme.brand.background} />
-        ) : (
-          <Square size={24} color={theme.brand.background} />
-        )}
-      </Pressable>
-      
-      {/* Task text (not pressable) */}
-      <ThemedText
-        style={{ borderColor: theme.border }}
+        <Pressable
+          onPress={() => onToggle?.(task)}
+          disabled={isToggling || isDeleting || isEditing}
+          className="p-4"
+          style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+        >
+          {isChecked ? (
+            <FontAwesome name="check-square" size={24} color={theme.brand.background} />
+          ) : (
+            <Square size={24} color={theme.brand.background} />
+          )}
+        </Pressable>
+        
+        {/* Task text (not pressable) */}
+        <ThemedText
+          style={{ borderColor: theme.border }}
         className={`py-2 flex-1 ${task.is_done ? 'line-through opacity-60' : ''} ${(isToggling || isDeleting || isSaving) ? 'opacity-50' : ''}`}
-      >
-        {task.text}
-      </ThemedText>
-    </View>
+        >
+          {task.text}
+        </ThemedText>
+      </View>
   );
 
   return (

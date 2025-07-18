@@ -37,6 +37,12 @@ export default function ThemedStack() {
         <Stack.Screen
             name="session"
         />
+        <Stack.Screen
+            name="session/create"
+            options={{
+                headerTitle: 'Create Session',
+            }}
+        />
       </Stack>
     );
   }

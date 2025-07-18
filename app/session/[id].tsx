@@ -18,6 +18,7 @@ import { NetworkError } from '@/components/common/NetworkError';
 import { AnimatedChevronButton } from '@/components/common/AnimatedChevronButton';
 import { FontAwesome } from '@expo/vector-icons';
 import { TaskInputAccessory } from '@/components/session/TaskInputAccessory';
+import { PaginationDots } from './PaginationDots';
 
 const { width } = Dimensions.get('window');
 
@@ -303,7 +304,12 @@ export default function SessionScreen() {
               decelerationRate="fast"
               showsHorizontalScrollIndicator={false}
               keyExtractor={item => item.id.toString()}
-              contentContainerStyle={{ paddingLeft: 4, paddingRight: 12 }}
+              // contentContainerStyle={{ paddingLeft: 4, paddingRight: 12 }}
+              contentContainerStyle={
+                participantColumnsData.length > 1
+                  ? { marginHorizontal: 'auto' }
+                  : { marginBottom: 48, marginHorizontal: 'auto' } // 48 = mb-12
+              }
               ItemSeparatorComponent={() => <View style={{ width: 14 }} />}
               onScroll={handleScroll}
               scrollEventThrottle={16}
@@ -341,21 +347,14 @@ export default function SessionScreen() {
             />
             
             {/* Pagination dots */}
-            {participantColumnsData.length > 1 && (
-              <View className="flex-row justify-center items-center py-4 mb-12">
-                {participantColumnsData.map((_, index) => (
-                  <View
-                    key={index}
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: currentPage === index ? theme.brand.background : theme.background.fourth,
-                      marginHorizontal: 4,
-                    }}
-                  />
-                ))}
-              </View>
+            {participantColumnsData.length > 1 ? (
+              <PaginationDots
+                count={participantColumnsData.length}
+                current={currentPage}
+                className="py-4 mb-12"
+              />
+            ) : (
+              <View className="mb-12" />
             )}
 
             {/* Animated Chevron Button */}

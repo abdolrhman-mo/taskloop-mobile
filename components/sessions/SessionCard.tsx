@@ -5,7 +5,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Session, User } from '@/types/session';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 interface SessionCardProps {
   session: Session;
@@ -55,29 +55,26 @@ export function SessionCard({
 
   return (
     <ThemedView
-      style={[
-        styles.container,
-        isFeatured ? styles.featuredContainer : styles.regularContainer,
-        { 
+      className={`rounded-lg overflow-hidden border p-4 flex-col gap-2`}
+      style={{ 
         backgroundColor: theme.background.secondary,
         borderColor: theme.border,
-          opacity: (isLeaving || isDeleting) ? 0.5 : 1,
-        }
-      ]}
+        opacity: (isLeaving || isDeleting) ? 0.5 : 1,
+      }}
     >
+
       {/* Role Badge */}
-      {isParticipant && (
-        <View 
-          style={[
-            styles.roleBadge,
-            { backgroundColor: `${theme.background.tertiary}20` }
-          ]}
-        >
-          <ThemedText style={[styles.roleText, { color: theme.typography.secondary }]}>
-          {isCreator ? 'Created by you' : `Created by ${session.creator_username}`}
-          </ThemedText>
-        </View>
-      )}
+      <View 
+        className="py-1 px-2 rounded-md border"
+        style={{ 
+          backgroundColor: theme.background.primary, 
+          borderColor: theme.border, 
+          alignSelf: 'flex-start' }} // Tells the View to only be as wide as its content
+      >
+        <ThemedText className="text-xs font-medium" style={{ color: theme.typography.secondary }}>
+        {isCreator ? 'Created by you' : `Created by ${session.creator_username}`}
+        </ThemedText>
+      </View>
 
       {/* <SessionMenu 
         session={session}
@@ -90,25 +87,18 @@ export function SessionCard({
         deleteError={deleteError}
       /> */}
 
-      <View style={[
-        styles.contentContainer,
-        isFeatured && styles.featuredContent,
-        isParticipant && styles.participantContent
-      ]}>
+      <View className={`items-center`}>
         <ThemedText 
-          style={[
-            styles.title,
-            isFeatured ? styles.featuredTitle : styles.regularTitle,
-            { color: theme.typography.primary }
-          ]}
+          className={`font-bold text-center ${isFeatured ? 'text-2xl mb-2' : 'text-xl mb-1'}`}
+          style={{ color: theme.typography.primary }}
         >
           {session.name}
         </ThemedText>
-        <View style={styles.detailsContainer}>
-          <ThemedText style={[styles.detailText, { color: theme.typography.secondary }]}>
+        <View className="items-center">
+          <ThemedText className="text-xs text-center" style={{ color: theme.typography.secondary }}>
             {session.participants_count} {session.participants_count === 1 ? 'participant' : 'participants'}
           </ThemedText>
-          <ThemedText style={[styles.detailText, { color: theme.typography.secondary }]}>
+          <ThemedText className="text-xs text-center" style={{ color: theme.typography.secondary }}>
             Created {formatDate(session.created_at)}
           </ThemedText>
         </View>
@@ -118,93 +108,16 @@ export function SessionCard({
         onPress={handleJoinPress}
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
-        style={[
-          styles.joinButton,
-          { 
-            backgroundColor: `${theme.brand.background}${isPressed ? '30' : '20'}`,
-            transform: [{ scale: isPressed ? 0.95 : 1 }]
-          }
-        ]}
+        className="w-full py-2.5 px-4 rounded-md mt-4 items-center"
+        style={{ 
+          backgroundColor: `${theme.brand.background}${isPressed ? '30' : '20'}`,
+          transform: [{ scale: isPressed ? 0.95 : 1 }]
+        }}
       >
-        <ThemedText style={[styles.joinButtonText, { color: theme.typography.primary }]}>
+        <ThemedText className="text-sm font-semibold" style={{ color: theme.typography.primary }}>
         Join Room
         </ThemedText>
       </Pressable>
     </ThemedView>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 8, // rounded-lg
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderLeftWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  featuredContainer: {
-    padding: 24, // p-6
-  },
-  regularContainer: {
-    padding: 20, // p-5
-  },
-  roleBadge: {
-    position: 'absolute',
-    top: 12, // top-3
-    left: 12, // left-3
-    paddingVertical: 4, // py-1
-    paddingHorizontal: 8, // px-2
-    borderRadius: 6, // rounded-md
-  },
-  roleText: {
-    fontSize: 12, // text-xs
-    fontWeight: '500', // font-medium
-  },
-  contentContainer: {
-    marginBottom: 12, // mb-3
-    alignItems: 'center', // Center content horizontally
-  },
-  featuredContent: {
-    alignItems: 'center',
-  },
-  participantContent: {
-    marginTop: 32, // mt-8
-  },
-  title: {
-    fontWeight: 'bold',
-    marginBottom: 4,
-    textAlign: 'center', // Center text
-  },
-  featuredTitle: {
-    fontSize: 24, // text-2xl
-    marginBottom: 8, // mb-2
-  },
-  regularTitle: {
-    fontSize: 20, // text-xl
-    marginBottom: 4, // mb-1
-  },
-  detailsContainer: {
-    gap: 4, // space-y-1
-    alignItems: 'center', // Center details horizontally
-  },
-  detailText: {
-    fontSize: 12, // text-xs
-    textAlign: 'center', // Center text
-  },
-  joinButton: {
-    width: '100%',
-    paddingVertical: 10, // py-2.5
-    paddingHorizontal: 16,
-    borderRadius: 6, // rounded-md
-    marginTop: 16, // mt-4
-    alignItems: 'center',
-  },
-  joinButtonText: {
-    fontSize: 14, // text-sm
-    fontWeight: '600', // font-semibold
-  },
-}); 
+} 

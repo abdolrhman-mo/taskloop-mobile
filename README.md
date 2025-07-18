@@ -26,7 +26,7 @@ In the output, you'll find options to open the app in a
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
 ## Todo
-5️⃣ Animated Arrow
+1- Animated Arrow
 👀 What:
 Add a pulsing down arrow or chevron icon at the bottom → visual nudge.
 
@@ -41,3 +41,11 @@ Example:
 Example:
 - If you scroll to the bottom → hide the arrow.
 - Or if your data is short → hide it immediately.
+
+
+2- when a new session is created it doesn't get added to the main (Global state management)
+   also the session name doesn't get updated
+
+3- when its only one person in the study room his tasks should be centerd horizontaly
+
+4- in [id].tsx file in task input accessory i want if user typed a new task but forgot to save it, i want it to be saved in async storage

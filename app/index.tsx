@@ -161,7 +161,7 @@ export default function HomeScreen() {
         >
           <TouchableWithoutFeedback onPress={() => setIsDropdownOpen(false)}>
             <ThemedView className="p-4 max-w-screen-xl self-center w-full">
-              <ThemedView className="mb-4">
+              <ThemedView className="mb-6">
                   <TouchableOpacity
                     onPress={() => router.push('/session/create')}
                     style={{ backgroundColor: theme.brand.background }}
@@ -191,14 +191,14 @@ export default function HomeScreen() {
                   </TouchableOpacity>
                   
                   {/* Test button */}
-                  {/* <TouchableOpacity
+                  <TouchableOpacity
                     onPress={() => router.push('/test')}
-                    className="bg-red-500 text-white"
+                    className="bg-red-500 text-white p-4 rounded-lg"
                   >
-                    <ThemedText style={[styles.createButtonText, { color: theme.brand.text }]}>
+                    <ThemedText style={{ color: theme.brand.text }} className="text-base font-semibold">
                       Test
                     </ThemedText>
-                  </TouchableOpacity> */}
+                  </TouchableOpacity>
               </ThemedView>
 
               {loading && <LoadingSpinner containerStyle={{ marginTop: 32, borderRadius: 8 }} />}

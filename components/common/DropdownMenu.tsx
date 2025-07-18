@@ -55,6 +55,7 @@ export function DropdownMenu({ items, isOpen, style }: DropdownMenuProps) {
           backgroundColor: theme.background.secondary,
           borderColor: theme.border,
           shadowColor: theme.border,
+          zIndex: 1000,
         },
         style
       ]}
