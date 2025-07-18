@@ -18,6 +18,13 @@ import { Session, User } from '@/types/session';
 import { NetworkError } from '@/components/common/NetworkError';
 import { PlusIcon } from 'lucide-react-native';
 import Svg, { Path } from 'react-native-svg';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { 
+  setStudyRooms, 
+  removeStudyRoom, 
+  setLoading as setRoomsLoading, 
+  setError as setRoomsError 
+} from '@/store/features/studyRoomsSlice';
 
 interface LeaveState {
   sessionId: string | null;
@@ -39,9 +46,12 @@ export default function HomeScreen() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const insets = useSafeAreaInsets();
   
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Redux state and actions
+  const dispatch = useAppDispatch();
+  const { rooms: sessions, isLoading: loading, error } = useAppSelector(
+    (state) => state.studyRooms
+  );
+  
   const [user, setUser] = useState<User | null>(null);
   const [leaveState, setLeaveState] = useState<LeaveState>({
     sessionId: null,
@@ -77,7 +87,7 @@ export default function HomeScreen() {
 
     try {
       await post(ENDPOINTS.SESSIONS.LEAVE.path(sessionId));
-      setSessions(prevSessions => prevSessions.filter(s => s.uuid !== sessionId));
+      dispatch(removeStudyRoom(sessionId));
     } catch (err) {
       console.error('Failed to leave study room:', err);
       setLeaveState(prev => ({
@@ -104,7 +114,7 @@ export default function HomeScreen() {
 
     try {
       await deleteRequest(ENDPOINTS.SESSIONS.MANAGE.DELETE.path(sessionId));
-      setSessions(prevSessions => prevSessions.filter(s => s.uuid !== sessionId));
+      dispatch(removeStudyRoom(sessionId));
     } catch (err) {
       console.error('Failed to delete study room:', err);
       setDeleteState(prev => ({
@@ -124,30 +134,19 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const fetchSessions = async () => {
-      setLoading(true);
+      dispatch(setRoomsLoading(true));
       try {
         const data = await get<Session[]>(ENDPOINTS.SESSIONS.LIST.path);
-        setSessions(data);
+        dispatch(setStudyRooms(data));
       } catch (err) {
         console.error(err);
-        setError('Failed to load study rooms. Please try refreshing the page.');
+        dispatch(setRoomsError('Failed to load study rooms. Please try refreshing the page.'));
       } finally {
-        setLoading(false);
+        dispatch(setRoomsLoading(false));
       }
     };
     fetchSessions();
-  }, [get]);
-
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem('token');
-      router.replace({
-        pathname: '/(auth)/login'
-      });
-    } catch (err) {
-      console.error('Failed to logout:', err);
-    }
-  };
+  }, [get, dispatch]);
 
   return (
     <SafeAreaView className="flex-1">
@@ -207,8 +206,21 @@ export default function HomeScreen() {
                 <NetworkError 
                   message={error} 
                   onRetry={() => {
-                    setError(null);
-                    setLoading(true);
+                    dispatch(setRoomsError(null));
+                    dispatch(setRoomsLoading(true));
+                    // Refetch sessions
+                    const fetchSessions = async () => {
+                      try {
+                        const data = await get<Session[]>(ENDPOINTS.SESSIONS.LIST.path);
+                        dispatch(setStudyRooms(data));
+                      } catch (err) {
+                        console.error(err);
+                        dispatch(setRoomsError('Failed to load study rooms. Please try refreshing the page.'));
+                      } finally {
+                        dispatch(setRoomsLoading(false));
+                      }
+                    };
+                    fetchSessions();
                   }} 
                 />
               )}

@@ -3,9 +3,8 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
-import { SettingsMenu } from '@/components/session/SettingsMenu';
 import { ShareRoomCTA } from '@/components/session/ShareRoomCTA';
-import { ShareSessionMenu } from '@/components/session/ShareSessionMenu';
+import { ShareSessionBottomSheet } from '@/components/session/ShareSessionBottomSheet';
 import { TaskColumn } from '@/components/session/TaskColumn';
 import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -19,6 +18,8 @@ import { AnimatedChevronButton } from '@/components/common/AnimatedChevronButton
 import { FontAwesome } from '@expo/vector-icons';
 import { TaskInputAccessory } from '@/components/session/TaskInputAccessory';
 import { PaginationDots } from './PaginationDots';
+import { SettingsBottomSheet } from '@/components/session/SettingsBottomSheet';
+import { useAppSelector } from '@/store/hooks';
 
 const { width } = Dimensions.get('window');
 
@@ -62,6 +63,14 @@ export default function SessionScreen() {
     getSortedParticipants
   } = useSession();
 
+  // Get session from Redux store for updated name
+  const sessionFromStore = useAppSelector(state => 
+    session ? state.studyRooms.rooms.find(room => room.uuid === session.uuid) : undefined
+  );
+
+  // Use Redux session name if available, otherwise fall back to local session
+  const currentSessionName = sessionFromStore?.name || session?.name;
+
   // Set navigation options
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -75,7 +84,7 @@ export default function SessionScreen() {
             />
           </View>
           <Text style={{ color: theme.typography.primary, fontSize: 16 }}>
-            {loading ? 'loading...' : (session ? session.name : 'Study Room')}
+            {loading ? 'loading...' : (session ? currentSessionName : 'Study Room')}
           </Text>
         </View>
       ),
@@ -98,7 +107,7 @@ export default function SessionScreen() {
         </View>
       ),
     });
-  }, [navigation, session, loading]);
+  }, [navigation, session, loading, currentSessionName]);
 
 
 
@@ -212,7 +221,7 @@ export default function SessionScreen() {
   return (
     <ThemedView className="flex-1 py-4">
       <SafeAreaView className="flex-1">
-        <SettingsMenu
+        <SettingsBottomSheet
           isOpen={isSettingsOpen}
           onClose={() => setIsSettingsOpen(false)}
           session={session}
@@ -225,7 +234,7 @@ export default function SessionScreen() {
           showRankings={showRankings}
           onShowRankingsChange={setShowRankings}
         />
-        <ShareSessionMenu
+        <ShareSessionBottomSheet
           isOpen={isShareOpen}
           onClose={() => setIsShareOpen(false)}
           sessionId={session.uuid}

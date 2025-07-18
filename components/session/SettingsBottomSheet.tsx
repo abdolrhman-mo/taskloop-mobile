@@ -1,5 +1,6 @@
 import { BottomSheet } from '@/components/common/BottomSheet';
 import { ConfirmationModal } from '@/components/common/ConfirmationModal';
+import { CustomModal } from '@/components/common/CustomModal';
 import { ThemedText } from '@/components/ThemedText';
 import { ENDPOINTS } from '@/config/endpoints';
 import { darkTheme, lightTheme } from '@/constants/Colors';
@@ -11,8 +12,10 @@ import { Edit2, LogOut, Trash2 } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SessionNameEditForm } from './SessionNameEditForm';
+import { useAppDispatch } from '@/store/hooks';
+import { updateStudyRoom, removeStudyRoom } from '@/store/features/studyRoomsSlice';
 
-interface SettingsMenuProps {
+interface SettingsBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
   session: Session;
@@ -31,7 +34,7 @@ interface EditState {
   error: string | null;
 }
 
-export function SettingsMenu({ 
+export function SettingsBottomSheet({ 
   isOpen,
   onClose,
   session, 
@@ -43,12 +46,13 @@ export function SettingsMenu({
   onTaskSortChange,
   showRankings,
   onShowRankingsChange
-}: SettingsMenuProps) {
+}: SettingsBottomSheetProps) {
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
   const { put, post, delete: deleteRequest } = useApi();
+  const dispatch = useAppDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditingName, setIsEditingName] = useState(false);
+  const [showEditNameModal, setShowEditNameModal] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [showConfirmLeave, setShowConfirmLeave] = useState(false);
   const [editState, setEditState] = useState<EditState>({
@@ -67,13 +71,13 @@ export function SettingsMenu({
 
 
   const handleEditName = () => {
-    setIsEditingName(true);
+    setShowEditNameModal(true);
     setEditState({ isLoading: false, error: null });
   };
 
   const handleNameSubmit = async (newName: string) => {
     if (!newName || newName === session.name) {
-      setIsEditingName(false);
+      setShowEditNameModal(false);
       return;
     }
 
@@ -84,11 +88,16 @@ export function SettingsMenu({
         ENDPOINTS.SESSIONS.MANAGE.UPDATE.path(session.uuid),
         { name: newName }
       );
+      
+      // Update local session state
       if (onSessionUpdate) {
         onSessionUpdate(updatedSession);
       }
-      setIsEditingName(false);
-      setIsModalOpen(false);
+      
+      // Update Redux global state
+      dispatch(updateStudyRoom(updatedSession));
+      
+      setShowEditNameModal(false);
     } catch (err) {
       console.error('Failed to update session name:', err);
       setEditState(prev => ({ 
@@ -125,26 +134,14 @@ export function SettingsMenu({
                 Study Room Name
               </ThemedText>
             </View>
-            {isEditingName ? (
-              <SessionNameEditForm
-                initialName={session.name}
-                isLoading={editState.isLoading}
-                onSubmit={handleNameSubmit}
-                onCancel={() => {
-                  setIsEditingName(false);
-                  setEditState({ isLoading: false, error: null });
-                }}
-              />
-            ) : (
-              <TouchableOpacity
-                onPress={handleEditName}
-                style={[styles.nameButton, { backgroundColor: `${theme.brand.background}10` }]}
-                activeOpacity={0.7}
-              >
-                <ThemedText style={styles.nameText}>{session.name}</ThemedText>
-                <Edit2 size={16} color={theme.typography.primary} />
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              onPress={handleEditName}
+              style={[styles.nameButton, { backgroundColor: `${theme.brand.background}10` }]}
+              activeOpacity={0.7}
+            >
+              <ThemedText style={styles.nameText}>{session.name}</ThemedText>
+              <Edit2 size={16} color={theme.typography.primary} />
+            </TouchableOpacity>
           </View>
 
           {/* Task Display Settings */}
@@ -201,7 +198,7 @@ export function SettingsMenu({
           </View> */}
 
           {/* Study Room Actions */}
-          <View style={[styles.section, styles.borderTop, { borderTopColor: theme.border }]}> 
+          <View style={[styles.section, styles.borderTop, { borderTopColor: theme.border }]}>
             <ThemedText style={[styles.sectionTitle, { color: theme.typography.secondary }]}>Study Room Actions</ThemedText>
             {isCreator ? (
               <TouchableOpacity
@@ -237,6 +234,36 @@ export function SettingsMenu({
         </BottomSheet>
       )}
 
+      {/* Edit study room name modal */}
+      <CustomModal
+        isVisible={showEditNameModal}
+        onClose={() => {
+          setShowEditNameModal(false);
+          setEditState({ isLoading: false, error: null });
+        }}
+      >
+        <View style={styles.editModalContent}>
+          <ThemedText style={[styles.editModalTitle, { color: theme.typography.primary }]}>
+            Edit Study Room Name
+          </ThemedText>
+          <SessionNameEditForm
+            initialName={session.name}
+            isLoading={editState.isLoading}
+            onSubmit={handleNameSubmit}
+            onCancel={() => {
+              setShowEditNameModal(false);
+              setEditState({ isLoading: false, error: null });
+            }}
+          />
+          {editState.error && (
+            <ThemedText style={[styles.error, { color: theme.error.DEFAULT }]}>
+              {editState.error}
+            </ThemedText>
+          )}
+        </View>
+      </CustomModal>
+
+      {/* Delete study room modal */}
       <ConfirmationModal
         isOpen={showConfirmDelete}
         onClose={() => setShowConfirmDelete(false)}
@@ -245,6 +272,10 @@ export function SettingsMenu({
             setActionState({ ...actionState, isLoading: true });
             try {
               await deleteRequest(ENDPOINTS.SESSIONS.MANAGE.DELETE.path(session.uuid));
+              
+              // Update Redux global state
+              dispatch(removeStudyRoom(session.uuid));
+              
               onSessionDelete?.();
               setShowConfirmDelete(false);
               router.replace('/');
@@ -259,6 +290,7 @@ export function SettingsMenu({
         isDestructive={true}
       />
 
+      {/* Leave study room modal */}
       <ConfirmationModal
         isOpen={showConfirmLeave}
         onClose={() => setShowConfirmLeave(false)}
@@ -267,6 +299,10 @@ export function SettingsMenu({
             setActionState({ ...actionState, isLoading: true });
             try {
               await post(ENDPOINTS.SESSIONS.LEAVE.path(session.uuid));
+              
+              // Update Redux global state
+              dispatch(removeStudyRoom(session.uuid));
+              
               onSessionLeave?.();
               setShowConfirmLeave(false);
               router.replace('/');
@@ -398,5 +434,13 @@ const styles = StyleSheet.create({
   error: {
     fontSize: 14,
     marginTop: 8,
+  },
+  editModalContent: {
+    gap: 16,
+  },
+  editModalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 }); 

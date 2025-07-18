@@ -1,8 +1,7 @@
 import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Check, X } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface SessionNameEditFormProps {
   initialName: string;
@@ -61,29 +60,33 @@ export function SessionNameEditForm({
             style={[
               styles.button,
               styles.cancelButton,
-              { backgroundColor: `${theme.error.DEFAULT}20` },
+              { borderColor: theme.border },
               isLoading && styles.disabled
             ]}
             disabled={isLoading}
             activeOpacity={0.7}
           >
-            <X size={20} color={theme.error.DEFAULT} />
+            <Text style={[styles.buttonText, { color: theme.typography.primary }]}>
+              Cancel
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleSubmit}
             style={[
               styles.button,
               styles.submitButton,
-              { backgroundColor: `${theme.brand.background}20` },
+              { backgroundColor: theme.brand.background },
               (!editedName.trim() || isLoading) && styles.disabled
             ]}
             disabled={!editedName.trim() || isLoading}
             activeOpacity={0.7}
           >
             {isLoading ? (
-              <ActivityIndicator size="small" color={theme.brand.background} />
+              <ActivityIndicator size="small" color={theme.brand.text} />
             ) : (
-              <Check size={20} color={theme.brand.background} />
+              <Text style={[styles.buttonText, { color: theme.brand.text }]}>
+                Save
+              </Text>
             )}
           </TouchableOpacity>
         </View>
@@ -117,17 +120,23 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   button: {
-    width: 36,
-    height: 36,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    minWidth: 80,
   },
   cancelButton: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderWidth: 1,
+    backgroundColor: 'transparent',
   },
   submitButton: {
-    backgroundColor: 'rgba(38, 157, 217, 0.1)',
+    borderWidth: 0,
+  },
+  buttonText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   disabled: {
     opacity: 0.5,

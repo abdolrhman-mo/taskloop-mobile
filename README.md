@@ -49,3 +49,7 @@ Example:
 3- when its only one person in the study room his tasks should be centerd horizontaly
 
 4- in [id].tsx file in task input accessory i want if user typed a new task but forgot to save it, i want it to be saved in async storage
+
+5- entering study room in create page
+
+6- edit room name is messed up as fuck

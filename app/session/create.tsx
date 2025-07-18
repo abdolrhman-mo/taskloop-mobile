@@ -7,9 +7,8 @@ import { darkTheme, lightTheme } from '@/constants/Colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useApi } from '@/hooks/useApi';
 import { useRouter } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity, View } from 'react-native';
-import PagerView from 'react-native-pager-view';
 
 interface CreateSessionResponse {
   uuid: string;
@@ -25,10 +24,6 @@ export default function CreateSessionScreen() {
   const [sessionName, setSessionName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-
-  const [currentPage, setCurrentPage] = useState(0);
-  const pagerRef = useRef(null);
-  const totalPages = 2;
 
   // Poll for session creation status
   const checkSessionStatus = async (sessionId: string) => {
@@ -73,106 +68,10 @@ export default function CreateSessionScreen() {
     }
   };
 
-  // const renderPaginationDots = () => {
-  //   return (
-  //     <View style={styles.paginationContainer}>
-  //       {Array.from({ length: totalPages }).map((_, index) => (
-  //         <TouchableOpacity
-  //           key={index}
-  //           style={[
-  //             styles.dot,
-  //             index === currentPage ? styles.activeDot : styles.inactiveDot,
-  //           ]}
-  //           onPress={() => pagerRef.current?.setPage(index)}
-  //         />
-  //       ))}
-  //     </View>
-  //   );
-  // };
-
   const renderScreen1 = () => {
     return (
-      <View 
-        className="p-6 rounded-xl border"
-        style={{ 
-          backgroundColor: theme.background.secondary,
-          borderColor: theme.border,
-        }}
-      >
-        <View className="mb-4">
-          <ThemedText className="text-sm font-medium mb-2" style={{ color: theme.typography.primary }}>
-              Study Room Name
-          </ThemedText>
-          <TextInput
-            value={sessionName}
-            onChangeText={setSessionName}
-              placeholder="Enter a name for your study room"
-            placeholderTextColor={theme.typography.secondary}
-            className="w-full px-4 py-3 text-base rounded-lg border"
-            style={{ 
-            borderColor: theme.border,
-            color: theme.typography.primary,
-                backgroundColor: theme.background.primary,
-              }}
-          maxLength={50}
-          autoFocus
-            editable={!isCreating}
-        />
-        </View>
-
-        {error && (
-          <View 
-            className="p-4 rounded-lg border mb-4"
-            style={{ 
-                backgroundColor: `${theme.error.DEFAULT}20`,
-              borderColor: `${theme.error.DEFAULT}40`,
-            }}
-          >
-            <ThemedText className="text-sm text-center" style={{ color: theme.error.DEFAULT }}>
-            {error}
-            </ThemedText>
-          </View>
-        )}
-
-        <View className="flex-row gap-3">
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="flex-1 py-3 rounded-lg items-center justify-center border bg-transparent"
-            style={{ 
-              borderColor: theme.border,
-            }}
-            activeOpacity={0.8}
-          >
-            <ThemedText className="text-base font-medium" style={{ color: theme.typography.primary }}>
-            Cancel
-            </ThemedText>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleCreateSession}
-              disabled={!sessionName.trim() || isCreating}
-            className="flex-1 min-w-[120px] py-3 rounded-lg items-center justify-center border"
-            style={{ 
-              backgroundColor: theme.brand.background,
-                opacity: (!sessionName.trim() || isCreating) ? 0.5 : 1,
-                borderColor: theme.brand.background,
-              }}
-            activeOpacity={0.8}
-          >
-            {isCreating ? (
-              <View className="flex-row items-center gap-2">
-                <ActivityIndicator size="small" color={theme.brand.text} />
-                <ThemedText className="text-base font-medium" style={{ color: theme.brand.text }}>
-                  Creating study room...
-                </ThemedText>
-              </View>
-            ) : (
-              <ThemedText className="text-base font-medium" style={{ color: theme.brand.text }}>
-                Create Study Room
-              </ThemedText>
-            )}
-          </TouchableOpacity>
-        </View>
+      <View>
+        <ThemedText>Screen 1</ThemedText>
       </View>
     );
   };
@@ -193,11 +92,88 @@ export default function CreateSessionScreen() {
     >
       <SafeScrollView>
         <View className="flex-1 p-4 max-w-[600px] w-full self-center">
-          <PagerView className="flex-1">
-            <View key="1">
-              {renderScreen1()}
+          <View 
+            className="p-6 rounded-xl border"
+            style={{ 
+              backgroundColor: theme.background.secondary,
+              borderColor: theme.border,
+            }}
+          >
+            <View className="mb-4">
+              <ThemedText className="text-sm font-medium mb-2" style={{ color: theme.typography.primary }}>
+                  Study Room Name
+              </ThemedText>
+              <TextInput
+                value={sessionName}
+                onChangeText={setSessionName}
+                  placeholder="Enter a name for your study room"
+                placeholderTextColor={theme.typography.secondary}
+                className="w-full px-4 py-3 text-base rounded-lg border"
+                style={{ 
+                borderColor: theme.border,
+                color: theme.typography.primary,
+                    backgroundColor: theme.background.primary,
+                  }}
+              maxLength={50}
+              autoFocus
+                editable={!isCreating}
+            />
             </View>
-          </PagerView>
+
+            {error && (
+              <View 
+                className="p-4 rounded-lg border mb-4"
+                style={{ 
+                    backgroundColor: `${theme.error.DEFAULT}20`,
+                  borderColor: `${theme.error.DEFAULT}40`,
+                }}
+              >
+                <ThemedText className="text-sm text-center" style={{ color: theme.error.DEFAULT }}>
+                {error}
+                </ThemedText>
+              </View>
+            )}
+
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                onPress={() => router.back()}
+                className="flex-1 py-3 rounded-lg items-center justify-center border bg-transparent"
+                style={{ 
+                  borderColor: theme.border,
+                }}
+                activeOpacity={0.8}
+              >
+                <ThemedText className="text-base font-medium" style={{ color: theme.typography.primary }}>
+                Cancel
+                </ThemedText>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleCreateSession}
+                disabled={!sessionName.trim() || isCreating}
+                className="flex-1 min-w-[120px] py-3 rounded-lg items-center justify-center border"
+                style={{ 
+                  backgroundColor: theme.brand.background,
+                  opacity: (!sessionName.trim() || isCreating) ? 0.5 : 1,
+                  borderColor: theme.brand.background,
+                }}
+                activeOpacity={0.8}
+              >
+                {isCreating ? (
+                  <View className="flex-row items-center gap-2">
+                    <ActivityIndicator size="small" color={theme.brand.text} />
+                    <ThemedText className="text-base font-medium" style={{ color: theme.brand.text }}>
+                      Creating study room...
+                    </ThemedText>
+                  </View>
+                ) : (
+                  <ThemedText className="text-base font-medium" style={{ color: theme.brand.text }}>
+                    Create Study Room
+                  </ThemedText>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </SafeScrollView>
     </KeyboardAvoidingView>

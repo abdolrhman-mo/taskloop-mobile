@@ -51,13 +51,13 @@ export function ConfirmationModal({
   return (
     <CustomModal isVisible={isOpen} onClose={onClose}>
       <View style={styles.modal}>
-        {/* Header */}
+         {/* Header */}
           <View style={[styles.header, { borderBottomColor: theme.border }]}>
             <Text style={[styles.title, { color: theme.typography.primary }]}>
             {title}
             </Text>
           </View>
-        {/* Message */}
+          {/* Message */}
           <View style={styles.messageContainer}>
             <View style={styles.messageContent}>
             <AlertTriangle 
@@ -70,11 +70,11 @@ export function ConfirmationModal({
               </Text>
             </View>
           </View>
-        {/* Actions */}
+          {/* Actions */}
           <View style={[styles.actions, { borderTopColor: theme.border }]}>
             <TouchableOpacity
               onPress={onConfirm}
-            disabled={isConfirming}
+              disabled={isConfirming}
               style={[
                 styles.button,
                 styles.confirmButton,
@@ -112,7 +112,6 @@ export function ConfirmationModal({
 
 const styles = StyleSheet.create({
   modal: {
-    width: '90%',
     maxWidth: 400,
     borderRadius: 12,
     overflow: 'hidden',
@@ -144,9 +143,10 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    padding: 16,
-    gap: 12,
+    paddingVertical: 16,
+    gap: 16,
     borderTopWidth: 1,
+    justifyContent: 'space-between',
   },
   button: {
     flex: 1,
