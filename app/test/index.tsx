@@ -112,9 +112,9 @@ const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
         throw new Error('No session UUID received');
       }
     } catch (err) {
-      console.error('Failed to create session:', err);
-      setError('Failed to create session. Please try again.');
-      dispatch(setRoomsError('Failed to create session. Please try again.'));
+      console.error('Failed to create study room:', err);
+      setError('Failed to create study room. Please try again.');
+      dispatch(setRoomsError('Failed to create study room. Please try again.'));
       dispatch(setLoading(false));
       setIsCreatingRoom(false);
     }

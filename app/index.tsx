@@ -170,7 +170,7 @@ export default function HomeScreen() {
                       <PlusIcon size={16} color={theme.brand.text} />
                       <ThemedText 
                         style={{ color: theme.brand.text }}
-                        className="text-base font-semibold"
+                        className="text-lg font-semibold"
                       >
                         New Study Room
                       </ThemedText>
@@ -190,14 +190,14 @@ export default function HomeScreen() {
                   </TouchableOpacity>
                   
                   {/* Test button */}
-                  <TouchableOpacity
+                  {/* <TouchableOpacity
                     onPress={() => router.push('/test')}
                     className="bg-red-500 text-white p-4 rounded-lg"
                   >
                     <ThemedText style={{ color: theme.brand.text }} className="text-base font-semibold">
                       Test
                     </ThemedText>
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
               </ThemedView>
 
               {loading && <LoadingSpinner containerStyle={{ marginTop: 32, borderRadius: 8 }} />}

@@ -40,7 +40,7 @@ export default function ThemedStack() {
         <Stack.Screen
             name="session/create"
             options={{
-                headerTitle: 'Create Session',
+                headerTitle: 'Start a Study Room',
             }}
         />
       </Stack>
